@@ -1267,25 +1267,23 @@ input[type="number"] {
 
 @media (min-width: 860px) {
   .page {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    grid-template-rows: auto 1fr;
+    flex-direction: row !important;
   }
 
   .filter-bar {
-    grid-column: 1;
-    grid-row: 1 / -1;
-    padding: 12px 14px;
-    border-right: 1px solid var(--border);
+    width: 280px;
+    flex-shrink: 0;
+    height: 100vh;
     max-height: 100vh;
     max-width: none;
     overflow-y: auto;
+    border-right: 1px solid var(--border);
     box-shadow: none;
   }
 
   .filter-bar.hidden {
     max-height: 100vh;
-    padding: 12px 14px;
+    padding: 6px 10px 4px;
     max-width: none;
     opacity: 1;
     pointer-events: auto;
@@ -1296,13 +1294,19 @@ input[type="number"] {
   }
 
   .result-bar {
-    grid-column: 2;
     max-width: none;
   }
 
+  .right-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
   .result-list {
-    grid-column: 2;
-    padding: 12px 12px;
+    flex: 1;
+    padding: 12px;
     max-width: none;
     display: flex;
     flex-wrap: wrap;
