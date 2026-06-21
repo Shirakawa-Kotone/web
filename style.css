@@ -1264,3 +1264,59 @@ input[type="number"] {
     margin: 0 auto;
   }
 }
+
+@media (min-width: 860px) {
+  .page {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+  }
+
+  .filter-bar {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    padding: 12px 14px;
+    border-right: 1px solid var(--border);
+    max-height: 100vh;
+    overflow-y: auto;
+    box-shadow: none;
+  }
+
+  .filter-bar.hidden {
+    max-height: 100vh;
+    padding: 12px 14px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .toggle-filter-btn {
+    display: none;
+  }
+
+  .result-bar {
+    grid-column: 2;
+  }
+
+  .result-list {
+    grid-column: 2;
+    padding: 12px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 10px;
+  }
+
+  .result-list .card {
+    width: calc(50% - 5px);
+    margin-bottom: 0;
+  }
+
+  .result-list .empty,
+  .result-list .loading-more,
+  .result-list .loading {
+    width: 100%;
+  }
+
+  .float-btn {
+    display: none;
+  }
+}
