@@ -8,6 +8,7 @@ Thumbs.db
 *.swp
 *.swo
 *~
+docs/
 
 # Editor settings
 .project
