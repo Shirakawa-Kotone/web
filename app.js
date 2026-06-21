@@ -1383,6 +1383,7 @@ function initDOM() {
     // Help
     btnDarkMode: document.getElementById('btn-dark-mode'),
     btnHelp: document.getElementById('btn-help'),
+    btnFeedback: document.getElementById('btn-feedback'),
   }
 }
 
@@ -1472,6 +1473,11 @@ function bindEvents() {
   // Help button
   DOM.btnHelp.addEventListener('click', function () {
     openTutorial(true)
+  })
+
+  // Feedback button → GitHub Issues
+  DOM.btnFeedback.addEventListener('click', function () {
+    window.open('https://github.com/Shirakawa-Kotone/miniprogram-web/issues/new', '_blank')
   })
 
   // Tutorial events
