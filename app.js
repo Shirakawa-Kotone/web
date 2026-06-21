@@ -1115,7 +1115,7 @@ function renderTutorialMerged(d, stepIdx) {
       (d.b ? '<div class="card-row row-highlight' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9"><span class="gp-label">2025</span><span class="card-value highlight">' + d.b.s + '分</span><span class="card-value highlight">最低排名 ' + d.b.r + '</span><span class="card-value">录取' + d.b.e + '人</span></div>' : '') +
       (d.d ? '<div class="card-row gp-year' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10"><span class="gp-label">2026</span><span class="card-value">计划录取' + d.d.e + '人</span></div>' : '') +
       (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 11 ? ' row-current' : '') + '" id="hl-11" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起▲' : '展开▼') + '</span></div>' : '') +
-      (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
+      (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 11 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
       (d._diffs ? '<div class="diff-section' + (stepIdx === 12 ? ' row-current' : '') + '" id="hl-12">' + renderTutorialDiffs(d._diffs) + '</div>' : '') +
     '</div></div>'
 }
@@ -1138,7 +1138,7 @@ function renderTutorialSingle2025(d, stepIdx) {
       '<div class="card-row' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9"><span class="card-label">录取</span><span class="card-value">' + d.enrolled + '人</span></div>' +
       '<div class="card-row' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10"><span class="card-label">收费标准</span><span class="card-value">' + d.fee + '元/年</span></div>' +
       (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 11 ? ' row-current' : '') + '" id="hl-11" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起▲' : '展开▼') + '</span></div>' : '') +
-      (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
+      (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 11 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
     '</div></div>'
 }
 
@@ -1159,7 +1159,7 @@ function renderTutorialSingle2026(d, stepIdx) {
       '<div class="card-row' + (stepIdx === 7 ? ' row-current' : '') + '" id="hl-7"><span class="card-label">计划录取</span><span class="card-value highlight">' + d.planCount + '人</span></div>' +
       '<div class="card-row' + (stepIdx === 8 ? ' row-current' : '') + '" id="hl-8"><span class="card-label">收费标准</span><span class="card-value">' + d.fee + '元/年</span></div>' +
       (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起▲' : '展开▼') + '</span></div>' : '') +
-      (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
+      (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 9 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
     '</div></div>'
 }
 
