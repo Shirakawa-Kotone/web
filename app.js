@@ -75,48 +75,98 @@ const state = {
 let DOM = {}
 
 // ============================================================
-// 数据加载 & 展开
+// 数据加载 & 展开（分块处理，支持进度更新）
 // ============================================================
-function expandAllData() {
+function expandAllData(callback) {
   if (!window.ALL_DATA_RAW) {
-    console.error('数据文件未加载')
-    return false
+    updateProgress(100, '数据文件未加载，请刷新重试')
+    if (callback) callback(false)
+    return
   }
 
-  updateProgress(30, '正在展开数据...')
+  updateProgress(25, '正在展开2024年数据...')
 
   const raw = window.ALL_DATA_RAW
   const { a: provincePool, b: schoolNamePool, c: groupNamePool, d: records, e: extra } = raw
   const { b: batchPool, p: planPool, g: gcPool, f: feePool, r: remarkPool } = extra
-
   const out = new Array(records.length)
   const yearMap = ['2024', '2025', '2026']
+  const TOTAL = records.length
 
-  for (let i = 0; i < records.length; i++) {
-    const r = records[i]
-    const srCode = SR_RMAP[r[4]] || ''
-    out[i] = [
-      yearMap[r[0]] || '2024',                         // [0] year
-      provincePool[r[1]] || '',                         // [1] province
-      String(r[2] || ''),                                // [2] school_code
-      schoolNamePool[r[3]] || '',                        // [3] school_name
-      srCode,                                            // [4] sr_code
-      groupNamePool[r[5]] || '',                         // [5] group_name
-      r[6],                                              // [6] min_score
-      r[7],                                              // [7] min_rank
-      r[8],                                              // [8] enrolled
-      batchPool[r[9]] || '',                             // [9] batch
-      planPool[r[10]] || '',                             // [10] plan
-      gcPool[r[11]] || '',                               // [11] group_code
-      feePool[r[12]] || '',                              // [12] fee
-      remarkPool[r[13]] || '',                           // [13] remark
-      srCode ? srCode.split('*').map(s => SR_MAP[s] || s).join(' ') : '不限',  // [14] sr_display
-    ]
+  // 按年份分三段处理：2024(0-22472), 2025(22472-47184), 2026(47184-74163)
+  const yearRanges = [
+    { start: 0, end: 22471, label: '2024', pct: 35 },
+    { start: 22472, end: 47183, label: '2025', pct: 45 },
+    { start: 47184, end: TOTAL - 1, label: '2026', pct: 55 },
+  ]
+
+  let rangeIdx = 0
+
+  function processRange() {
+    if (rangeIdx >= yearRanges.length) {
+      // 全部展开完成
+      state.allData = out
+      updateProgress(62, '数据展开完成，正在构建索引...')
+
+      setTimeout(() => {
+        updateProgress(68, '正在按年份拆分数据...')
+        // 这里数据已经就绪，但 splitByYear 被延迟到用户点击年份时触发
+        // 直接继续构建缓存
+        setTimeout(() => {
+          if (callback) callback(true)
+        }, 50)
+      }, 50)
+      return
+    }
+
+    const range = yearRanges[rangeIdx]
+    updateProgress(range.pct, '正在展开' + range.label + '年数据...')
+
+    // 每次处理约 1/3 的数据（约 2.2~2.7万条），分多步执行避免长时间阻塞
+    const CHUNK_SIZE = 5000
+    let pos = range.start
+    const end = range.end
+
+    function processChunk() {
+      const chunkEnd = Math.min(pos + CHUNK_SIZE, end + 1)
+      for (let i = pos; i < chunkEnd; i++) {
+        const r = records[i]
+        const srCode = SR_RMAP[r[4]] || ''
+        out[i] = [
+          yearMap[r[0]] || '2024',
+          provincePool[r[1]] || '',
+          String(r[2] || ''),
+          schoolNamePool[r[3]] || '',
+          srCode,
+          groupNamePool[r[5]] || '',
+          r[6], r[7], r[8],
+          batchPool[r[9]] || '',
+          planPool[r[10]] || '',
+          gcPool[r[11]] || '',
+          feePool[r[12]] || '',
+          remarkPool[r[13]] || '',
+          srCode ? srCode.split('*').map(s => SR_MAP[s] || s).join(' ') : '不限',
+        ]
+      }
+      pos = chunkEnd
+
+      if (pos <= end) {
+        // 同一范围内继续分块
+        const pctInRange = range.pct + Math.floor((pos - range.start) / (end - range.start + 1) * 8)
+        updateProgress(pctInRange, '正在展开' + range.label + '年数据... (' + (pos - range.start + 1) + '条)')
+        setTimeout(processChunk, 16)
+      } else {
+        // 当前年份完成，进入下一年份
+        rangeIdx++
+        setTimeout(processRange, 16)
+      }
+    }
+
+    processChunk()
   }
 
-  state.allData = out
-  updateProgress(60, '数据展开完成')
-  return true
+  // 从 DOM 初始化回调开始
+  processRange()
 }
 
 // ============================================================
@@ -1295,42 +1345,54 @@ function bindEvents() {
 // 启动
 // ============================================================
 function init() {
-  updateProgress(30, '正在加载数据文件...')
+  updateProgress(10, '正在加载数据文件...')
 
   // 延迟执行确保 DOM 已渲染
   setTimeout(() => {
     initDOM()
     bindEvents()
 
-    // 展开数据
-    if (!expandAllData()) {
-      updateProgress(100, '数据加载失败，请刷新页面重试')
-      return
-    }
+    updateProgress(20, '加载完成，正在初始化界面...')
 
-    updateProgress(80, '构建查询缓存...')
-    buildMergedCache()
-
-    updateProgress(90, '准备就绪...')
-
-    // 检查是否需要引导
+    // 展开数据（分块异步，带进度）
     setTimeout(() => {
-      // 切换到主页面
-      DOM.pageLoading.style.display = 'none'
-      DOM.pageIndex.style.display = 'flex'
+      expandAllData(function (success) {
+        if (!success) {
+          updateProgress(100, '数据加载失败，请刷新页面重试')
+          return
+        }
 
-      state.loaded = true
+        updateProgress(75, '正在构建查询缓存...')
 
-      // 首访引导
-      let tutorialDone = false
-      try { tutorialDone = localStorage.getItem('tutorial_done') } catch (e) {}
-      if (!tutorialDone) {
-        openTutorial(false)
-      }
+        setTimeout(() => {
+          buildMergedCache()
 
-      // 初始搜索
-      doSearch()
-    }, 300)
+          updateProgress(82, '正在优化搜索结果排序...')
+
+          setTimeout(() => {
+            updateProgress(90, '准备就绪...')
+
+            // 切换到主页面
+            setTimeout(() => {
+              DOM.pageLoading.style.display = 'none'
+              DOM.pageIndex.style.display = 'flex'
+
+              state.loaded = true
+
+              // 首访引导
+              let tutorialDone = false
+              try { tutorialDone = localStorage.getItem('tutorial_done') } catch (e) {}
+              if (!tutorialDone) {
+                openTutorial(false)
+              }
+
+              // 初始搜索
+              doSearch()
+            }, 200)
+          }, 80)
+        }, 80)
+      })
+    }, 80)
   }, 50)
 }
 
