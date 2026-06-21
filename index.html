@@ -60,7 +60,7 @@
         </div>
       </div>
 
-      <!-- 选科要求 + 专业组名称 -->
+      <!-- 选科要求 + 批次 -->
       <div class="filter-row">
         <div class="filter-item half">
           <span class="label">选科要求</span>
@@ -69,16 +69,22 @@
           </div>
         </div>
         <div class="filter-item half">
-          <span class="label">专业组名称</span>
-          <input class="input input-sm" placeholder="模糊搜索" id="input-group-name" data-field="groupName" />
+          <span class="label">批次类型</span>
+          <div class="picker" id="btn-batches">
+            <span id="batch-label" class="placeholder-text">全部批次</span>
+          </div>
         </div>
       </div>
 
-      <!-- 专业组代码 -->
+      <!-- 专业组名称 + 专业组代码 -->
       <div class="filter-row">
-        <div class="filter-item">
+        <div class="filter-item half">
+          <span class="label">专业组名称</span>
+          <input class="input input-sm" placeholder="模糊搜索" id="input-group-name" data-field="groupName" />
+        </div>
+        <div class="filter-item half">
           <span class="label">专业组代码</span>
-          <input class="input" placeholder="如 501, 5A" id="input-group-code" data-field="groupCode" />
+          <input class="input input-sm" placeholder="如 501, 5A" id="input-group-code" data-field="groupCode" />
         </div>
       </div>
 
@@ -167,6 +173,21 @@
         </div>
       </div>
       <div class="modal-body" id="sr-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ 批次多选弹窗 ============ -->
+  <div id="batch-modal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">选择批次</span>
+        <div class="modal-actions">
+          <span class="modal-btn" id="btn-select-all-batch">全选</span>
+          <span class="modal-btn" id="btn-clear-all-batch">清空</span>
+          <span class="modal-btn confirm" id="btn-confirm-batch">确定</span>
+        </div>
+      </div>
+      <div class="modal-body" id="batch-list"></div>
     </div>
   </div>
 

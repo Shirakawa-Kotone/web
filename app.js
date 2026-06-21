@@ -18,6 +18,7 @@ const PROVINCES_ALL = [
 
 const SR_LIST = ['不限', '物理', '物理+化学', '物理+生物', '物理+化学+生物']
 const SR_CODES = ['', '04', '04*05', '04*06', '04*05*06']
+let BATCH_ALL = []  // 动态填充：从展开数据中提取的唯一批次列表
 const PAGE_SIZE = 30
 const SEARCH_DEBOUNCE = 200
 
@@ -38,6 +39,8 @@ const state = {
   year: '',
   selectedProvinces: [],
   provinceLabel: '全部省份',
+  selectedBatches: [],
+  batchLabel: '全部批次',
   code: '',
   name: '',
   srIdx: 0,
@@ -62,6 +65,10 @@ const state = {
   // Province picker temp state
   tempSelectedProvinces: [],
   tempChecked: [],
+
+  // Batch picker temp state
+  tempSelectedBatches: [],
+  tempBatchChecked: [],
 
   // Tutorial
   tutorialMode: 'merged',
@@ -223,6 +230,15 @@ function buildMergedCache() {
   state.mergedCache = Array.from(groups.values())
 }
 
+function buildBatchList() {
+  const set = new Set()
+  for (let i = 0; i < state.allData.length; i++) {
+    const v = state.allData[i][9]
+    if (v) set.add(v)
+  }
+  BATCH_ALL = Array.from(set).sort()
+}
+
 // ============================================================
 // 工具函数
 // ============================================================
@@ -235,6 +251,12 @@ function getProvinceLabel(arr) {
   if (!arr || !arr.length) return '全部省份'
   if (arr.length <= 2) return arr.join('、')
   return arr.slice(0, 2).join('、') + ' 等' + arr.length + '个省份'
+}
+
+function getBatchLabel(arr) {
+  if (!arr || !arr.length) return '全部批次'
+  if (arr.length <= 2) return arr.join('、')
+  return arr.slice(0, 2).join('、') + ' 等' + arr.length + '个批次'
 }
 
 function computeDiffs(g, vr) {
@@ -278,10 +300,26 @@ function doSearch() {
   if (!state.loaded) return
   const t0 = Date.now()
 
-  const { year, selectedProvinces, code, name, srIdx, groupName, groupCode, minScore, maxRank, only2026, hideSports, hideCoop } = state
+  const { year, selectedProvinces, selectedBatches, code, name, srIdx, groupName, groupCode, minScore, maxRank, only2026, hideSports, hideCoop } = state
   const sr = srIdx > 0 ? SR_CODES[srIdx] : ''
   const ms = parseInt(minScore) || 0
   const mr = parseInt(maxRank) || 0
+
+  // 输入校验：最低分和最低排名不能为负数或非数字
+  const rawMinScore = String(minScore).trim()
+  const rawMaxRank = String(maxRank).trim()
+  const parsedMin = parseInt(rawMinScore)
+  const parsedMax = parseInt(rawMaxRank)
+  const minInvalid = rawMinScore !== '' && (isNaN(parsedMin) || parsedMin < 0)
+  const maxInvalid = rawMaxRank !== '' && (isNaN(parsedMax) || parsedMax < 0)
+  if (minInvalid || maxInvalid) {
+    state.searchCache = []
+    state.totalCount = 0
+    state.loadTime = 0
+    renderResults()
+    DOM.emptyMsg.textContent = '请检查输入内容'
+    return
+  }
   const provinceSet = selectedProvinces.length ? new Set(selectedProvinces) : null
   const codeStr = String(code).trim()
   const nameStr = String(name).trim()
@@ -304,6 +342,7 @@ function doSearch() {
       if (hideSports && (g.g.indexOf('体育') !== -1 || g.n.indexOf('体育') !== -1)) continue
       if (hideCoop && (g.g.indexOf('中外合作') !== -1 || (g.remark && g.remark.indexOf('中外合作') !== -1))) continue
       if (only2026 && !g.d) continue
+      if (selectedBatches.length && selectedBatches.indexOf(g.batch) === -1) continue
 
       let needClone = false
       if (ms || mr) {
@@ -316,7 +355,8 @@ function doSearch() {
           const pass = (!ms || Number(g.b.s) >= ms) && (!mr || Number(g.b.r) <= mr)
           if (!pass) needClone = true; else anyPass = true
         }
-        if (g.d) {
+        // 仅2026招生模式下，2026年为计划招生数据可能无有效分数排名，不纳入筛选
+        if (g.d && !only2026) {
           const pass = (!ms || Number(g.d.s) >= ms) && (!mr || Number(g.d.r) <= mr)
           if (!pass) needClone = true; else anyPass = true
         }
@@ -328,12 +368,13 @@ function doSearch() {
         if (ms) {
           if (c.a && Number(c.a.s) < ms) c.a = null
           if (c.b && Number(c.b.s) < ms) c.b = null
-          if (c.d && Number(c.d.s) < ms) c.d = null
+          // 仅2026招生模式下保留2026数据行，不因分数排名过滤而清除
+          if (c.d && Number(c.d.s) < ms && !only2026) c.d = null
         }
         if (mr) {
           if (c.a && Number(c.a.r) > mr) c.a = null
           if (c.b && Number(c.b.r) > mr) c.b = null
-          if (c.d && Number(c.d.r) > mr) c.d = null
+          if (c.d && Number(c.d.r) > mr && !only2026) c.d = null
         }
         c._diffs = computeDiffs(c, c._vr)
         results.push(c)
@@ -375,6 +416,7 @@ function doSearch() {
       if (groupStr && r[5].indexOf(groupStr) === -1) continue
       if (groupCodeStr && String(r[11]).indexOf(groupCodeStr) === -1) continue
       if (only2026 && r[0] !== '2026') continue
+      if (selectedBatches.length && selectedBatches.indexOf(r[9]) === -1) continue
       if (hideSports && (r[5].indexOf('体育') !== -1 || r[3].indexOf('体育') !== -1)) continue
       if (hideCoop && (r[5].indexOf('中外合作') !== -1 || r[13].indexOf('中外合作') !== -1)) continue
       result.push(r)
@@ -429,6 +471,7 @@ function renderResults() {
   loadMore() // 从 page 0 开始加载
   DOM.totalCount.textContent = state.totalCount
   DOM.loadTime.textContent = state.loadTime ? '(' + state.loadTime + 'ms)' : ''
+  DOM.emptyMsg.textContent = '无匹配结果'
 
   if (state.totalCount === 0) {
     DOM.emptyMsg.style.display = 'block'
@@ -643,6 +686,8 @@ function onYearChange(year) {
   if (year === '2026') {
     state.minScore = ''
     state.maxRank = ''
+    DOM.inputMinScore.value = ''
+    DOM.inputMaxRank.value = ''
   }
   state.year = year
   updateFilterUI()
@@ -684,6 +729,8 @@ function doReset() {
   state.year = ''
   state.selectedProvinces = []
   state.provinceLabel = '全部省份'
+  state.selectedBatches = []
+  state.batchLabel = '全部批次'
   state.code = ''
   state.name = ''
   state.srIdx = 0
@@ -771,6 +818,70 @@ function renderProvincePicker() {
 }
 
 // ============================================================
+// 批次多选弹窗
+// ============================================================
+function openBatchPicker() {
+  state.tempSelectedBatches = [...state.selectedBatches]
+  state.tempBatchChecked = BATCH_ALL.map(b => state.selectedBatches.indexOf(b) !== -1)
+  renderBatchPicker()
+  DOM.batchModal.style.display = 'flex'
+}
+
+function closeBatchPicker() {
+  DOM.batchModal.style.display = 'none'
+}
+
+function toggleBatch(idx) {
+  const item = BATCH_ALL[idx]
+  if (state.tempBatchChecked[idx]) {
+    const i = state.tempSelectedBatches.indexOf(item)
+    if (i !== -1) state.tempSelectedBatches.splice(i, 1)
+  } else {
+    state.tempSelectedBatches.push(item)
+  }
+  state.tempBatchChecked[idx] = !state.tempBatchChecked[idx]
+  renderBatchPicker()
+}
+
+function selectAllBatches() {
+  state.tempSelectedBatches = [...BATCH_ALL]
+  state.tempBatchChecked = BATCH_ALL.map(() => true)
+  renderBatchPicker()
+}
+
+function clearBatches() {
+  state.tempSelectedBatches = []
+  state.tempBatchChecked = BATCH_ALL.map(() => false)
+  renderBatchPicker()
+}
+
+function confirmBatchPicker() {
+  state.selectedBatches = [...state.tempSelectedBatches]
+  state.batchLabel = getBatchLabel(state.selectedBatches)
+  DOM.batchModal.style.display = 'none'
+  DOM.batchLabel.textContent = state.batchLabel
+  DOM.batchLabel.className = state.selectedBatches.length ? '' : 'placeholder-text'
+  doSearch()
+}
+
+function renderBatchPicker() {
+  const list = DOM.batchList
+  list.innerHTML = ''
+  for (let i = 0; i < BATCH_ALL.length; i++) {
+    const item = document.createElement('div')
+    item.className = 'modal-item'
+    item.dataset.idx = i
+    item.innerHTML = '<div class="check-box' + (state.tempBatchChecked[i] ? ' checked' : '') + '">' +
+      (state.tempBatchChecked[i] ? '<span class="check-mark">✓</span>' : '') +
+      '</div><span class="modal-item-text">' + BATCH_ALL[i] + '</span>'
+    item.addEventListener('click', function () {
+      toggleBatch(parseInt(this.dataset.idx))
+    })
+    list.appendChild(item)
+  }
+}
+
+// ============================================================
 // 选科选择弹窗
 // ============================================================
 function openSRPicker() {
@@ -821,13 +932,18 @@ function updateFilterUI() {
   DOM.srLabel.textContent = SR_LIST[state.srIdx]
   DOM.srLabel.className = state.srIdx === 0 ? 'placeholder-text' : ''
 
+  // Batch label
+  DOM.batchLabel.textContent = state.batchLabel
+  DOM.batchLabel.className = state.selectedBatches.length ? '' : 'placeholder-text'
+
   // Toggle switches
   updateToggleUI('toggle-only2026', state.only2026)
   updateToggleUI('toggle-hide-sports', state.hideSports)
   updateToggleUI('toggle-hide-coop', state.hideCoop)
 
-  // Score/rank row visibility
-  DOM.scoreRow.style.display = (state.year === '2026' || state.only2026) ? 'none' : 'flex'
+  // Score/rank row visibility: 仅在选择2026单年份时隐藏
+  // 在「全部」模式中即使勾选「仅2026招生」也保持可见，因为分组数据仍有2024/2025的分数排名
+  DOM.scoreRow.style.display = state.year === '2026' ? 'none' : 'flex'
 }
 
 function updateToggleUI(id, isOn) {
@@ -1218,6 +1334,15 @@ function initDOM() {
     btnSR: document.getElementById('btn-sr'),
     btnConfirmSR: document.getElementById('btn-confirm-sr'),
 
+    // Batch
+    batchModal: document.getElementById('batch-modal'),
+    batchList: document.getElementById('batch-list'),
+    batchLabel: document.getElementById('batch-label'),
+    btnBatches: document.getElementById('btn-batches'),
+    btnSelectAllBatch: document.getElementById('btn-select-all-batch'),
+    btnClearAllBatch: document.getElementById('btn-clear-all-batch'),
+    btnConfirmBatch: document.getElementById('btn-confirm-batch'),
+
     // Results
     resultList: document.getElementById('result-list'),
     resultCards: document.getElementById('result-cards'),
@@ -1281,6 +1406,15 @@ function bindEvents() {
     if (e.target === this) closeSRPicker()
   })
   DOM.btnConfirmSR.addEventListener('click', confirmSR)
+
+  // Batch picker
+  DOM.btnBatches.addEventListener('click', openBatchPicker)
+  DOM.batchModal.addEventListener('click', function (e) {
+    if (e.target === this) closeBatchPicker()
+  })
+  DOM.btnSelectAllBatch.addEventListener('click', selectAllBatches)
+  DOM.btnClearAllBatch.addEventListener('click', clearBatches)
+  DOM.btnConfirmBatch.addEventListener('click', confirmBatchPicker)
 
   // Toggle switches
   document.getElementById('toggle-only2026').addEventListener('click', onToggleOnly2026)
@@ -1366,6 +1500,7 @@ function init() {
 
         setTimeout(() => {
           buildMergedCache()
+          buildBatchList()
 
           updateProgress(82, '正在优化搜索结果排序...')
 
