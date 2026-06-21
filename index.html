@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>2024-2026高考录取数据查询</title>
+  <meta name="description" content="江西省2024-2026年高考录取数据查询，支持院校、专业、分数、排名等多维度筛选">
+  <meta name="theme-color" content="#39C5BB">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ============ 加载页 ============ -->
+  <div id="page-loading" class="page-loading">
+    <div class="load-box">
+      <div class="spinner"></div>
+      <span class="load-stage" id="load-stage">正在加载数据...</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:10%"></div>
+      </div>
+      <span class="load-pct" id="load-pct">10%</span>
+    </div>
+  </div>
+
+  <!-- ============ 首页 ============ -->
+  <div id="page-index" class="page" style="display:none">
+    <!-- 筛选面板 -->
+    <div class="filter-bar" id="filter-bar">
+      <!-- 年份选项卡 + 帮助 -->
+      <div class="filter-row tabs-row">
+        <div class="year-tabs" id="year-tabs">
+          <span class="tab active" data-year="" data-action="year">全部</span>
+          <span class="tab" data-year="2024" data-action="year">2024</span>
+          <span class="tab" data-year="2025" data-action="year">2025</span>
+          <span class="tab" data-year="2026" data-action="year">2026</span>
+        </div>
+        <div class="header-actions">
+          <span class="help-btn" id="btn-help">帮助</span>
+        </div>
+      </div>
+
+      <!-- 省市多选 + 院校代号 -->
+      <div class="filter-row">
+        <div class="filter-item half">
+          <span class="label">报考省份（报考学校所在地）</span>
+          <div class="picker" id="btn-provinces">
+            <span id="province-label" class="placeholder-text">全部省份</span>
+          </div>
+        </div>
+        <div class="filter-item half">
+          <span class="label">院校代号</span>
+          <input class="input" placeholder="模糊搜索" id="input-code" data-field="code" />
+        </div>
+      </div>
+
+      <!-- 院校名称 -->
+      <div class="filter-row">
+        <div class="filter-item">
+          <span class="label">院校名称</span>
+          <input class="input" placeholder="模糊搜索" id="input-name" data-field="name" />
+        </div>
+      </div>
+
+      <!-- 选科要求 + 专业组名称 -->
+      <div class="filter-row">
+        <div class="filter-item half">
+          <span class="label">选科要求</span>
+          <div class="picker" id="btn-sr">
+            <span id="sr-label">不限</span>
+          </div>
+        </div>
+        <div class="filter-item half">
+          <span class="label">专业组名称</span>
+          <input class="input input-sm" placeholder="模糊搜索" id="input-group-name" data-field="groupName" />
+        </div>
+      </div>
+
+      <!-- 专业组代码 -->
+      <div class="filter-row">
+        <div class="filter-item">
+          <span class="label">专业组代码</span>
+          <input class="input" placeholder="如 501, 5A" id="input-group-code" data-field="groupCode" />
+        </div>
+      </div>
+
+      <!-- 最低分 / 最低排名 -->
+      <div class="filter-row" id="filter-score-row">
+        <div class="filter-item half">
+          <span class="label">最低分 ≥</span>
+          <input class="input input-sm" type="number" placeholder="不限" id="input-min-score" data-field="minScore" />
+        </div>
+        <div class="filter-item half">
+          <span class="label">最低排名 ≤</span>
+          <input class="input input-sm" type="number" placeholder="不限" id="input-max-rank" data-field="maxRank" />
+        </div>
+      </div>
+
+      <!-- 筛选开关 -->
+      <div class="filter-row toggle-row">
+        <div class="toggle-item" id="toggle-only2026" data-toggle="only2026">
+          <div class="toggle-box"><span class="toggle-check"></span></div>
+          <span class="toggle-label">仅2026招生</span>
+        </div>
+        <div class="toggle-item" id="toggle-hide-sports" data-toggle="hideSports">
+          <div class="toggle-box"><span class="toggle-check"></span></div>
+          <span class="toggle-label">隐藏体育</span>
+        </div>
+        <div class="toggle-item" id="toggle-hide-coop" data-toggle="hideCoop">
+          <div class="toggle-box"><span class="toggle-check"></span></div>
+          <span class="toggle-label">隐藏中外合作</span>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="filter-row actions">
+        <button class="btn btn-reset" id="btn-reset">重置</button>
+        <button class="btn btn-search" id="btn-search">搜索</button>
+      </div>
+    </div>
+
+    <!-- 结果统计栏 -->
+    <div class="result-bar">
+      <div class="result-bar-left">
+        <span>共 <strong class="count" id="total-count">0</strong> 条结果</span>
+        <span class="load-time" id="load-time"></span>
+      </div>
+      <span class="toggle-filter-btn" id="toggle-filter">收起筛选</span>
+    </div>
+
+    <!-- 结果列表 -->
+    <div class="result-list" id="result-list">
+      <div id="result-top"></div>
+      <div id="result-cards"></div>
+      <!-- 状态提示 -->
+      <div class="empty" id="empty-msg" style="display:none">无匹配结果</div>
+      <div class="loading-more" id="loading-more" style="display:none">上拉加载更多…</div>
+    </div>
+
+    <!-- 回到顶部浮动按钮 -->
+    <div class="float-btn" id="float-btn" style="display:none">
+      <span class="float-arrow">⬆</span>
+      <span class="float-text">回到顶部</span>
+    </div>
+  </div>
+
+  <!-- ============ 省市多选弹窗 ============ -->
+  <div id="province-modal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">选择省市</span>
+        <div class="modal-actions">
+          <span class="modal-btn" id="btn-select-all">全选</span>
+          <span class="modal-btn" id="btn-clear-all">清空</span>
+          <span class="modal-btn confirm" id="btn-confirm-province">确定</span>
+        </div>
+      </div>
+      <div class="modal-body" id="province-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ 选科选择弹窗 ============ -->
+  <div id="sr-modal" class="modal-overlay" style="display:none">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <span class="modal-title">选科要求</span>
+        <div class="modal-actions">
+          <span class="modal-btn confirm" id="btn-confirm-sr">确定</span>
+        </div>
+      </div>
+      <div class="modal-body" id="sr-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ 引导页弹窗 ============ -->
+  <div id="tutorial-overlay" class="tutorial-overlay" style="display:none">
+    <div class="tutorial-modal">
+      <div class="tutorial-header">
+        <span class="tutorial-title">帮助指南</span>
+        <span class="tutorial-skip" id="tutorial-skip">跳过</span>
+      </div>
+      <div class="mode-tabs" id="tutorial-tabs">
+        <span class="mode-tab active" data-mode="merged">全部对比</span>
+        <span class="mode-tab" data-mode="single2025">2025录取</span>
+        <span class="mode-tab" data-mode="single2026">2026计划</span>
+      </div>
+      <div class="tutorial-card-area">
+        <div class="tutorial-scroll" id="tutorial-scroll">
+          <div id="tutorial-card"></div>
+        </div>
+        <div class="step-panel" id="tutorial-panel">
+          <div class="step-progress">
+            <span class="step-count" id="step-count">第 1/1 步</span>
+            <div class="step-bar-bg">
+              <div class="step-bar-fill" id="step-bar-fill" style="width:0%"></div>
+            </div>
+          </div>
+          <span class="step-title" id="step-title"></span>
+          <span class="step-desc" id="step-desc"></span>
+          <div class="step-nav">
+            <span class="nav-btn disabled" id="btn-prev">← 上一步</span>
+            <span class="nav-btn primary" id="btn-next">下一步 →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="alldata.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
