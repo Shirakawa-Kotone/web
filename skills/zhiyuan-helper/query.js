@@ -202,17 +202,28 @@ function die(msg) { console.error(`错误: ${msg}`); process.exit(1) }
 
 function cell(v) { return String(v ?? '').replace(/\|/g, '\\|') }
 
+function splitName(name) {
+  // "计算机类(电子信息工程、人工智能)" → {base: "计算机类", majors: "电子信息工程、人工智能"}
+  // "工科试验班类(...)(计算机、软件)"" → {base: "工科试验班类(...)", majors: "计算机、软件"}
+  const last = name.lastIndexOf('(')
+  if (last > 0 && name.endsWith(')')) {
+    return { base: name.slice(0, last), majors: name.slice(last + 1, -1) }
+  }
+  return { base: name, majors: '' }
+}
+
 function formatMarkdown(matched) {
-  const lines = ['| 院校 | 专业组 | 专业组代号 | 选科 | 批次 | 2024分/排名 | 2025分/排名 | 备注 |',
-                 '|------|--------|-----------|------|------|-------------|-------------|------|']
+  const lines = ['| 院校 | 专业组 | 包含专业 | 专业组代号 | 选科 | 批次 | 2024分/排名 | 2025分/排名 | 备注 |',
+                 '|------|--------|---------|-----------|------|------|-------------|-------------|------|']
   for (const school of matched) {
     for (const g of school.groups) {
+      const { base, majors } = splitName(g.name)
       const srShow = g.srDisplay || '不限'
       const h24 = g.history?.['2024']
       const h25 = g.history?.['2025']
       const s24 = h24 ? (h24.score ?? '') + '/' + (h24.rank ?? '') : '-'
       const s25 = h25 ? (h25.score ?? '') + '/' + (h25.rank ?? '') : '-'
-      lines.push(`| ${cell(school.school)} | ${cell(g.name)} | ${cell(g.code)} | ${cell(srShow)} | ${cell(g.batch)} | ${cell(s24)} | ${cell(s25)} | ${cell(g.remark)} |`)
+      lines.push(`| ${cell(school.school)} | ${cell(base)} | ${cell(majors)} | ${cell(g.code)} | ${cell(srShow)} | ${cell(g.batch)} | ${cell(s24)} | ${cell(s25)} | ${cell(g.remark)} |`)
     }
   }
   return lines.join('\n')
