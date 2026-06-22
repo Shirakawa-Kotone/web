@@ -1021,7 +1021,7 @@ const TUTORIAL = {
     demo: {
       n: '赣江大学（仅供示范）', c: '8888', p: '江西',
       batch: '本科', plan: '非定向',
-      s: '物理+化学', g: '人工智能', gc: 'A01',
+      s: '物理+化学', g: '人工智能', gc: '501',
       _sd: '物理 化学',
       a: { s: 600, r: 10000, e: 35 },
       b: { s: 580, r: 15000, e: 38 },
@@ -1074,7 +1074,7 @@ const TUTORIAL = {
       { title: '院校名称与代号', desc: '院校的全称及其在江西省高考招生的唯一代号。2026年为志愿填报参考数据。' },
       { title: '省市', desc: '院校所在的省份/直辖市。' },
       { title: '批次', desc: '录取批次类型。2026年招生计划延续了之前的批次划分。' },
-      { title: '选科要求', desc: '该专业对高考选考科目的要求。本示范为「物理+生物」，需同时选考这两科方可报考。' },
+      { title: '选科要求', desc: '该专业对高考选考科目的要求。本示范为「物理+生物」，需同时选考这两科方可报考。显示为「物理 生物」。' },
       { title: '性质', desc: '招生计划的性质。2026年计划数据中的性质分类与往年一致。' },
       { title: '专业名称', desc: '该专业组包含的专业名称。本示范为南昌大学「法学」专业。' },
       { title: '专业组代码', desc: '该专业的组代码。2026年法学专业组代码为502。' },
@@ -1085,7 +1085,7 @@ const TUTORIAL = {
     ],
     demo: {
       year: '2026', p: '江西', c: '8101', n: '南昌大学',
-      sr: '物理+生物', g: '法学', gc: '502', batch: '本科',
+      sr: '物理 生物', g: '法学', gc: '502', batch: '本科',
       plan: '非定向',
       planCount: 7, fee: '4950', majorCode: 'A0',
       remark: '不招单色不能识别的考生。',
@@ -1265,7 +1265,7 @@ function renderTutorialSingle2025(d, stepIdx) {
       '<span class="card-code">' + escHtml(d.c) + '</span>' +
     '</div>' +
     '<div class="card-body">' +
-      '<div class="card-row' + (stepIdx === 1 ? ' row-current' : '') + '" id="hl-1"><span class="card-label">省市</span><span class="card-value">' + escHtml(d.p) + '</span></div>' +
+      '<div class="card-row' + (stepIdx === 1 ? ' row-current' : '') + '" id="hl-1"><span class="card-label">省份</span><span class="card-value">' + escHtml(d.p) + '</span></div>' +
       '<div class="card-row' + (stepIdx === 2 ? ' row-current' : '') + '" id="hl-2"><span class="card-label">批次</span><span class="card-value badge">' + escHtml(d.batch) + '</span></div>' +
       '<div class="card-row' + (stepIdx === 3 ? ' row-current' : '') + '" id="hl-3"><span class="card-label">选科</span><span class="card-value tag">' + escHtml(d.sr) + '</span></div>' +
       '<div class="card-row' + (stepIdx === 4 ? ' row-current' : '') + '" id="hl-4"><span class="card-label">性质</span><span class="card-value">' + escHtml(d.plan) + '</span></div>' +
@@ -1287,7 +1287,7 @@ function renderTutorialSingle2026(d, stepIdx) {
       '<span class="card-code">' + escHtml(d.c) + '</span>' +
     '</div>' +
     '<div class="card-body">' +
-      '<div class="card-row' + (stepIdx === 1 ? ' row-current' : '') + '" id="hl-1"><span class="card-label">省市</span><span class="card-value">' + escHtml(d.p) + '</span></div>' +
+      '<div class="card-row' + (stepIdx === 1 ? ' row-current' : '') + '" id="hl-1"><span class="card-label">省份</span><span class="card-value">' + escHtml(d.p) + '</span></div>' +
       '<div class="card-row' + (stepIdx === 2 ? ' row-current' : '') + '" id="hl-2"><span class="card-label">批次</span><span class="card-value badge">' + escHtml(d.batch) + '</span></div>' +
       '<div class="card-row' + (stepIdx === 3 ? ' row-current' : '') + '" id="hl-3"><span class="card-label">选科</span><span class="card-value tag">' + escHtml(d.sr) + '</span></div>' +
       '<div class="card-row' + (stepIdx === 4 ? ' row-current' : '') + '" id="hl-4"><span class="card-label">性质</span><span class="card-value">' + escHtml(d.plan) + '</span></div>' +
