@@ -41,3 +41,7 @@ web/
 - HTML5 + CSS3（Flexbox 自适应布局）
 - Vanilla JavaScript（无框架、无构建工具）
 - 移动端优先设计，适配手机浏览器
+
+---
+
+基于本项目开发的 AI Skill：[college-pilot](https://github.com/HM-Suiji/college-pilot) 支持在 Claude Code 等 AI 客户端中直接查询高考数据、生成志愿方案。
