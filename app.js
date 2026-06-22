@@ -1384,6 +1384,9 @@ function initDOM() {
     btnDarkMode: document.getElementById('btn-dark-mode'),
     btnHelp: document.getElementById('btn-help'),
     btnFeedback: document.getElementById('btn-feedback'),
+    btnHelpBar: document.getElementById('btn-help-bar'),
+    btnFeedbackBar: document.getElementById('btn-feedback-bar'),
+    btnDarkModeBar: document.getElementById('btn-dark-mode-bar'),
   }
 }
 
@@ -1479,6 +1482,13 @@ function bindEvents() {
   DOM.btnFeedback.addEventListener('click', function () {
     window.open('https://github.com/Shirakawa-Kotone/miniprogram-web/issues/new', '_blank')
   })
+
+  // Result bar action buttons
+  DOM.btnHelpBar.addEventListener('click', function () { openTutorial(true) })
+  DOM.btnFeedbackBar.addEventListener('click', function () {
+    window.open('https://github.com/Shirakawa-Kotone/miniprogram-web/issues/new', '_blank')
+  })
+  DOM.btnDarkModeBar.addEventListener('click', onToggleDarkMode)
 
   // Tutorial events
   DOM.tutorialSkip.addEventListener('click', finishTutorialAndStart)
