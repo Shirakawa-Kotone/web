@@ -41,7 +41,7 @@ cp -r skills/zhiyuan-helper ~/.claude/skills/zhiyuan-helper
 **问题 1：分数和排名**（必填）
 
 ```
-header: "分数/排名"
+header: "你的分数和排名？"
 question: "你的高考分数和全省排名是多少？（填写一项或两项都写）"
 options:
   - label: "输入分数"
@@ -57,7 +57,7 @@ options:
 **问题 2：选科要求**（必填）
 
 ```
-header: "选科"
+header: "你选了哪些科目？"
 question: "你高考选考了哪些科目？在「其他」中填写"
 options:
   - label: "填写选科"
@@ -70,7 +70,7 @@ options:
 
 **问题 3：意向省份**
 ```
-header: "省份"
+header: "想去哪些省份？"
 question: "有想去的省份吗？在「其他」中填写（可写多个）"
 options:
   - label: "填写省份"
@@ -81,7 +81,7 @@ options:
 
 **问题 4：批次**
 ```
-header: "批次"
+header: "想报哪个批次？"
 question: "想报哪个批次？在「其他」中填写"
 options:
   - label: "填写批次"
@@ -92,7 +92,7 @@ options:
 
 **问题 5：专业方向**
 ```
-header: "专业"
+header: "想学什么专业？"
 question: "有想学的专业方向吗？在「其他」中填写"
 options:
   - label: "填写专业"
@@ -103,7 +103,7 @@ options:
 
 **问题 6：中外合作办学**
 ```
-header: "中外合作"
+header: "能接受中外合作吗？"
 question: "是否能接受中外合作办学专业？"
 options:
   - label: "接受"
