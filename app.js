@@ -1025,7 +1025,7 @@ const TUTORIAL = {
       _sd: '物理 化学',
       a: { s: 600, r: 10000, e: 35 },
       b: { s: 580, r: 15000, e: 38 },
-      d: { e: 40 },
+      d: { e: 40, code: 'A01' },
       remark: '本数据仅供示范用途，并非真实录取信息。',
       _newLabel: true,
       _diffs: [
@@ -1078,6 +1078,7 @@ const TUTORIAL = {
       { title: '性质', desc: '招生计划的性质。2026年计划数据中的性质分类与往年一致。' },
       { title: '专业名称', desc: '该专业组包含的专业名称。本示范为南昌大学「法学」专业。' },
       { title: '专业组代码', desc: '该专业的组代码。2026年法学专业组代码为502。' },
+      { title: '专业代号', desc: '2026年新增的专业唯一代号（如A0、A1），用于精确标识该专业。' },
       { title: '计划录取', desc: '2026年该专业的计划招生名额（7人）。实际录取人数可能会有微调。' },
       { title: '收费标准', desc: '每学年的学费标准（4950元/年）。不同专业学费可能不同。' },
       { title: '备注', desc: '该专业的特殊说明，可点击展开查看完整内容。' },
@@ -1086,7 +1087,7 @@ const TUTORIAL = {
       year: '2026', p: '江西', c: '8101', n: '南昌大学',
       sr: '物理+生物', g: '法学', gc: '502', batch: '本科',
       plan: '非定向',
-      planCount: 7, fee: '4950',
+      planCount: 7, fee: '4950', majorCode: 'A0',
       remark: '不招单色不能识别的考生。',
     },
   },
@@ -1249,7 +1250,7 @@ function renderTutorialMerged(d, stepIdx) {
       '<div class="card-row' + (stepIdx === 7 ? ' row-current' : '') + '" id="hl-7"><span class="card-label">专业组代码</span><span class="card-value">' + escHtml(d.gc) + '</span></div>' +
       (d.a ? '<div class="card-row row-highlight' + (stepIdx === 8 ? ' row-current' : '') + '" id="hl-8"><span class="gp-label">2024</span><span class="card-value highlight">' + d.a.s + '分</span><span class="card-value highlight">最低排名 ' + d.a.r + '</span><span class="card-value">录取' + d.a.e + '人</span></div>' : '') +
       (d.b ? '<div class="card-row row-highlight' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9"><span class="gp-label">2025</span><span class="card-value highlight">' + d.b.s + '分</span><span class="card-value highlight">最低排名 ' + d.b.r + '</span><span class="card-value">录取' + d.b.e + '人</span></div>' : '') +
-      (d.d ? '<div class="card-row gp-year' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10"><span class="gp-label">2026</span><span class="card-value">计划录取' + d.d.e + '人</span></div>' : '') +
+      (d.d ? '<div class="card-row gp-year' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10"><span class="gp-label">2026</span><span class="card-value">专业代号 ' + escHtml(d.d.code) + '</span><span class="card-value">计划录取' + d.d.e + '人</span></div>' : '') +
       (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 11 ? ' row-current' : '') + '" id="hl-11" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起▲' : '展开▼') + '</span></div>' : '') +
       (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 11 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
       (d._diffs ? '<div class="diff-section' + (stepIdx === 12 ? ' row-current' : '') + '" id="hl-12">' + renderTutorialDiffs(d._diffs) + '</div>' : '') +
@@ -1292,10 +1293,11 @@ function renderTutorialSingle2026(d, stepIdx) {
       '<div class="card-row' + (stepIdx === 4 ? ' row-current' : '') + '" id="hl-4"><span class="card-label">性质</span><span class="card-value">' + escHtml(d.plan) + '</span></div>' +
       '<div class="card-row' + (stepIdx === 5 ? ' row-current' : '') + '" id="hl-5"><span class="card-label">专业名称</span><span class="card-value full">' + escHtml(d.g) + '</span></div>' +
       '<div class="card-row' + (stepIdx === 6 ? ' row-current' : '') + '" id="hl-6"><span class="card-label">专业组代码</span><span class="card-value">' + escHtml(d.gc) + '</span></div>' +
-      '<div class="card-row' + (stepIdx === 7 ? ' row-current' : '') + '" id="hl-7"><span class="card-label">计划录取</span><span class="card-value highlight">' + d.planCount + '人</span></div>' +
-      '<div class="card-row' + (stepIdx === 8 ? ' row-current' : '') + '" id="hl-8"><span class="card-label">收费标准</span><span class="card-value">' + d.fee + '元/年</span></div>' +
-      (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起▲' : '展开▼') + '</span></div>' : '') +
-      (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 9 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
+      '<div class="card-row' + (stepIdx === 7 ? ' row-current' : '') + '" id="hl-7"><span class="card-label">专业代号</span><span class="card-value">' + escHtml(d.majorCode) + '</span></div>' +
+      '<div class="card-row' + (stepIdx === 8 ? ' row-current' : '') + '" id="hl-8"><span class="card-label">计划录取</span><span class="card-value highlight">' + d.planCount + '人</span></div>' +
+      '<div class="card-row' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9"><span class="card-label">收费标准</span><span class="card-value">' + d.fee + '元/年</span></div>' +
+      (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起▲' : '展开▼') + '</span></div>' : '') +
+      (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 10 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
     '</div></div>'
 }
 
