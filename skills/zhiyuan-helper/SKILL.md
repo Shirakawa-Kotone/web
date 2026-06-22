@@ -106,6 +106,9 @@ node ~/.claude/skills/zhiyuan-helper/query.js [选项]
 # 分数+选科+省份+专业
 node ~/.claude/skills/zhiyuan-helper/query.js --score 620 --sr 物化生 --province 广东 --keyword 计算机
 
+# 多关键词：--keyword 可重复使用，任一个匹配即返回（OR 逻辑）
+node ~/.claude/skills/zhiyuan-helper/query.js --score 620 --sr 物化生 --keyword 计算机 --keyword 软件 --keyword 人工智能
+
 # 物化政/物化地 → 统一用物化生
 node ~/.claude/skills/zhiyuan-helper/query.js --score 620 --sr 物化生 --province 浙江 --keyword 计算机
 
@@ -191,17 +194,23 @@ node ~/.claude/skills/zhiyuan-helper/query.js --estimate-rank --score 620 --year
 
 ### 第三步：语义扩展
 
-结果太少（< 10 院校）时，LLM 将专业意向扩展为多个关键词逐一查询后去重合并：
+结果太少（< 10 院校）时，将专业意向扩展为多个关键词，一次性用 `--keyword`（可重复）查询。`--keyword` 间是 OR 逻辑（匹配任一即返回），无需逐一查询再手动去重。
 
-| 用户说 | 扩展关键词 |
-|--------|-----------|
-| "计算机" | 计算机、软件、网络、信息、智能、物联网、数字媒体、数据 |
-| "学医" | 临床医学、口腔医学、医学、药学、护理、基础医学、预防医学 |
-| "当老师" | 师范、教育、数学与应用数学、汉语言文学、英语 |
-| "人工智能" | 人工智能、计算机、智能、数据科学、机器人 |
-| "金融" | 金融、经济、会计、财务管理、保险、投资 |
-| "法学" | 法学、知识产权、社会工作 |
-| "随便/不限" | 不传 --keyword，不做语义扩展 |
+示例：
+```bash
+# 一次查询多个相关专业，OR 匹配
+node ~/.claude/skills/zhiyuan-helper/query.js --score 620 --sr 物化生 --keyword 计算机 --keyword 软件 --keyword 智能 --keyword 信息
+```
+
+| 用户说 | `--keyword` 传值（一次传多个） |
+|--------|------------------------------|
+| "计算机" | `--keyword 计算机 --keyword 软件 --keyword 信息 --keyword 智能 --keyword 数据` |
+| "学医" | `--keyword 临床医学 --keyword 口腔医学 --keyword 医学 --keyword 药学 --keyword 护理` |
+| "当老师" | `--keyword 师范 --keyword 教育 --keyword 数学 --keyword 汉语言` |
+| "人工智能" | `--keyword 人工智能 --keyword 计算机 --keyword 智能 --keyword 数据` |
+| "金融" | `--keyword 金融 --keyword 经济 --keyword 会计 --keyword 财务 --keyword 投资` |
+| "法学" | `--keyword 法学 --keyword 知识产权` |
+| "随便/不限" | 不传 `--keyword`，不做语义扩展 |
 
 ### 第四步：冲稳保分档
 

@@ -14,6 +14,9 @@ node skills/zhiyuan-helper/query.js --help
 # 按分数查询（自动匹配 ±10 分）
 node skills/zhiyuan-helper/query.js --score 620 --sr 物化生 --province 广东 --keyword 计算机
 
+# 多专业关键词同时查询（OR 匹配）
+node skills/zhiyuan-helper/query.js --score 620 --sr 物化生 --keyword 计算机 --keyword 软件 --keyword 人工智能
+
 # 按排名查询（自动匹配 ±30%）
 node skills/zhiyuan-helper/query.js --rank 8000 --province 北京 --batch 本科
 

@@ -205,7 +205,7 @@ function filterMerged(merged, params) {
     if (provinceSet && !provinceSet.has(grp.province)) return false
     if (batchSet && !batchSet.has(grp.batch)) return false
     if (sr && !srMatch(sr, grp.sr)) return false
-    if (keyword && grp.groupName.indexOf(keyword) === -1) return false
+    if (keyword.length && !keyword.some(k => grp.groupName.indexOf(k) !== -1)) return false
     // 指定年份: 只返回该年有数据的组
     if (year && !grp.history[year]) return false
     if (!passesScoreRank(grp, score, rank)) return false
@@ -309,7 +309,7 @@ function parseArgs() {
     sr: null,
     province: [],
     batch: [],
-    keyword: null,
+    keyword: [],
     year: null,
     limit: DEFAULT_LIMIT,
     estimateRank: false,
@@ -339,7 +339,7 @@ function parseArgs() {
         params.batch.push(next())
         break
       case '--keyword':
-        params.keyword = next()
+        params.keyword.push(next())
         break
       case '--year':
         params.year = next()
@@ -377,7 +377,7 @@ function printHelp() {
   --sr <str>         选科要求，如: 物化生 / 物理+化学 / 04*05*06
   --province <name>  学校所在省份 (可重复指定多个)
   --batch <name>     批次 (可重复指定多个)
-  --keyword <str>    专业组名称关键词 (模糊匹配)
+  --keyword <str>    专业组关键词 (可重复, 多关键词 OR 匹配)
   --year <str>       指定年份 2024|2025|2026
   --limit <n>        返回院校数上限 (默认 200)
 
@@ -438,7 +438,7 @@ function main() {
       sr: params.sr,
       province: params.province.length ? params.province : undefined,
       batch: params.batch.length ? params.batch : undefined,
-      keyword: params.keyword,
+      keyword: params.keyword.length ? params.keyword : undefined,
       year: params.year,
     },
     total: filtered.length,

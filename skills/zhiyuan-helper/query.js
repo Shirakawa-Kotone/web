@@ -99,7 +99,7 @@ function filterSchools(schools, params) {
     for (const g of school.groups) {
       if (batchSet && !batchSet.has(g.batch)) continue
       if (sr && !srMatch(sr, g.sr)) continue
-      if (keyword && g.name.indexOf(keyword) === -1) continue
+      if (keyword.length && !keyword.some(k => g.name.indexOf(k) !== -1)) continue
       if (year && !g.history[year]) continue
       if (!passesScoreRank(g, score, rank)) continue
 
@@ -160,7 +160,7 @@ function parseArgs() {
   --sr <str>         选科: 物化生 / 04*05*06
   --province <name>  省份 (可重复)
   --batch <name>     批次 (可重复)
-  --keyword <str>    专业组关键词
+  --keyword <str>    专业组关键词 (可重复, 多关键词 OR 匹配)
   --year <str>       年份 2024|2025|2026
   --limit <n>        上限 (默认 200)
 
@@ -174,7 +174,7 @@ function parseArgs() {
     process.exit(0)
   }
 
-  const params = { score: null, rank: null, sr: null, province: [], batch: [], keyword: null, year: null, limit: DEFAULT_LIMIT, estimateRank: false }
+  const params = { score: null, rank: null, sr: null, province: [], batch: [], keyword: [], year: null, limit: DEFAULT_LIMIT, estimateRank: false }
 
   for (let i = 0; i < args.length; i++) {
     const next = () => { const v = args[++i]; if (v === undefined) die(`缺少参数值: ${args[i-1]}`); return v }
@@ -184,7 +184,7 @@ function parseArgs() {
       case '--sr': params.sr = next(); break
       case '--province': params.province.push(next()); break
       case '--batch': params.batch.push(next()); break
-      case '--keyword': params.keyword = next(); break
+      case '--keyword': params.keyword.push(next()); break
       case '--year': params.year = next(); if (!['2024','2025','2026'].includes(params.year)) die('--year 只能为 2024|2025|2026'); break
       case '--limit': params.limit = parseInt(next()); if (isNaN(params.limit) || params.limit < 1) die('--limit 需要正整数'); break
       case '--estimate-rank': params.estimateRank = true; break
@@ -231,7 +231,7 @@ function main() {
       rank: params.rank,
       sr: params.sr,
       province: params.province.length ? params.province : undefined,
-      keyword: params.keyword,
+      keyword: params.keyword.length ? params.keyword : undefined,
       year: params.year,
     },
     total: matched.reduce((sum, s) => sum + s.groups.length, 0),
