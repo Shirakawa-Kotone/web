@@ -890,6 +890,27 @@ input[type="number"] {
   font-size: 13px;
 }
 
+/* Loading indicator for assistant */
+.as-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+  gap: 14px;
+}
+.as-loading-spinner {
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: as-spin 0.7s linear infinite;
+}
+@keyframes as-spin { to { transform: rotate(360deg); } }
+
 /* Tab bar inside .as-columns (hidden by default, shown on narrow) */
 .as-tab-bar {
   display: none;

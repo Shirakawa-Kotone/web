@@ -719,9 +719,11 @@ function makeOtherMajorsBody(others) {
 
 function toggleAdjustExpand(mapKey) {
   state.assistantAdjustExpanded[mapKey] = !state.assistantAdjustExpanded[mapKey]
-  // 重新渲染志愿推荐结果
+  // 直接同步重绘，无需 loading 动画
   if (DOM.assistantResults.style.display !== 'none') {
-    startAssistant()
+    _execAssistant(parseInt(DOM.asScore.value) || 0, parseInt(DOM.asRank.value) || 0,
+      asSrIdx >= 0 ? AS_SR_CODES[asSrIdx] : '', REGIONS[REGION_NAMES[asRegionIdx]],
+      String(DOM.asKeyword.value).trim())
   }
 }
 
@@ -1539,6 +1541,8 @@ function renderTutorialDiffs(diffs) {
 let asSrIdx = -1  // -1 = 未选择
 let asRegionIdx = 0
 let _mobileAssistantActive = false  // 手机端志愿推荐模式是否激活
+let _asComputing = false  // 防止重复点击
+let _asGen = 0  // 递增计数器，避免并发 setTimeout 渲染过期结果
 
 function openAssistantSR() {
   renderASSRList()
@@ -1756,9 +1760,6 @@ function startAssistant() {
   // Read inputs
   const score = parseInt(DOM.asScore.value) || 0
   const rank = parseInt(DOM.asRank.value) || 0
-  const srCode = asSrIdx >= 0 ? AS_SR_CODES[asSrIdx] : ''
-  const regionProvinces = REGIONS[REGION_NAMES[asRegionIdx]]
-  const keyword = String(DOM.asKeyword.value).trim()
 
   if (!score && !rank) {
     DOM.asColumns.innerHTML = '<div class="as-empty">请输入高考分数或全省排名</div>'
@@ -1766,7 +1767,25 @@ function startAssistant() {
     return
   }
 
-  // 过滤 mergedCache（仅推荐 2026 年有招生计划的专业组）
+  // 防重复点击
+  if (_asComputing) return
+  _asComputing = true
+
+  // 先显示加载动画再延迟计算，让浏览器有机会渲染 loading 状态
+  DOM.asColumns.innerHTML = '<div class="as-loading"><div class="as-loading-spinner"></div><span>正在计算志愿推荐...</span></div>'
+  showAssistantMode()
+
+  const srCode = asSrIdx >= 0 ? AS_SR_CODES[asSrIdx] : ''
+  const regionProvinces = REGIONS[REGION_NAMES[asRegionIdx]]
+  const keyword = String(DOM.asKeyword.value).trim()
+
+  const gen = ++_asGen
+  setTimeout(function () {
+    _execAssistant(score, rank, srCode, regionProvinces, keyword)
+  }, 0)
+}
+
+function _execAssistant(score, rank, srCode, regionProvinces, keyword) {
   const results = { '冲': [], '稳': [], '保': [] }
   const data = state.mergedCache || []
   const algoVal = ALGO_LIST[state.assistantAlgoIdx].value
@@ -1816,8 +1835,14 @@ function startAssistant() {
     })
   }
 
-  renderAssistantResults(results, score, rank)
-  showAssistantMode()
+  try {
+    renderAssistantResults(results, score, rank)
+  } catch (e) {
+    console.error(e)
+    DOM.asColumns.innerHTML = '<div class="as-empty">计算时出现错误，请重试</div>'
+  } finally {
+    _asComputing = false
+  }
 }
 
 function renderAssistantResults(results, userScore, userRank) {
