@@ -4,6 +4,8 @@
 
 纯前端单页应用，零依赖，可直接部署在 GitHub Pages。
 
+> [📋 查看更新日志 →](https://shirakawa-kotone.github.io/miniprogram-web/changelog/)
+
 ---
 
 ## 项目结构
@@ -22,6 +24,9 @@ web/
 │       ├── SKILL.md              # Claude Code skill 定义
 │       ├── query.js              # skill 内置查询脚本（独立数据包）
 │       └── schools.json          # skill 内置数据（2258 院校 × 3.7 万专业组）
+├── CHANGELOG.md                  # 更新日志
+├── changelog/
+│   └── index.html                # 更新日志渲染页面
 └── README.md                     # 本文件
 ```
 
