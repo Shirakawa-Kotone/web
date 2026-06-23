@@ -966,6 +966,29 @@ input[type="number"] {
   word-break: break-all;
 }
 
+/* 同专业组其他专业列表 */
+.adjust-majors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 2px 0;
+}
+.adjust-major-item {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  padding: 1px 0;
+}
+.adjust-major-item .major-name {
+  color: var(--text);
+  font-weight: 500;
+}
+.adjust-major-item .major-detail {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
 /* Year diff section */
 .diff-section {
   margin-top: 8px;

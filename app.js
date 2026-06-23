@@ -105,6 +105,10 @@ const state = {
   tutorialSteps: [],
   tutorialDemo: null,
   tutorialRemarkExpanded: false,
+
+  // Assistant: 服从调剂
+  assistantAdjust: false,
+  assistantAdjustExpanded: {},
 }
 
 // DOM references (set once on init)
@@ -268,6 +272,48 @@ function buildBatchList() {
     if (v) set.add(v)
   }
   BATCH_ALL = Array.from(set).sort()
+}
+
+// ============================================================
+// 同专业组其他专业映射表（基于 2026 年数据）
+// ============================================================
+function buildGroupMajorMap() {
+  if (state._groupMajorMapCache) return state._groupMajorMapCache
+  const map = new Map()
+  const yearIdx = 2 // 2026
+  const raw = window.ALL_DATA_RAW
+  if (!raw) return map
+  const { a: provincePool, b: schoolNamePool, c: groupNamePool, d: records, e: extra } = raw
+  const { b: batchPool, p: planPool, g: gcPool, f: feePool, r: remarkPool } = extra
+
+  const yearRanges = [
+    { start: 0, end: 22471 },
+    { start: 22472, end: 47183 },
+    { start: 47184, end: records.length - 1 },
+  ]
+  const { start, end } = yearRanges[yearIdx]
+
+  for (let i = start; i <= end; i++) {
+    const r = records[i]
+    const school = schoolNamePool[r[3]] || ''
+    const groupCode = gcPool[r[11]] || ''
+    const groupName = groupNamePool[r[5]] || ''
+    if (!school || !groupCode) continue
+    const key = school + '\x00' + groupCode
+    if (!map.has(key)) map.set(key, [])
+    const list = map.get(key)
+    // 去重：同一专业组下可能有同名专业
+    if (!list.some(m => m.n === groupName)) {
+      list.push({
+        n: groupName,
+        code: r[14] !== undefined ? gcPool[r[14]] || '' : '',
+        planCount: r[8],
+        remark: remarkPool[r[13]] || '',
+      })
+    }
+  }
+  state._groupMajorMapCache = map
+  return map
 }
 
 // ============================================================
@@ -542,7 +588,7 @@ function renderMore() {
   DOM.emptyMsg.style.display = state.totalCount === 0 ? 'block' : 'none'
 }
 
-function renderCardGrouped(item, idx) {
+function renderCardGrouped(item, idx, groupMajorMap) {
   const card = document.createElement('div')
   card.className = 'card'
   card.dataset.idx = idx
@@ -612,8 +658,63 @@ function renderCardGrouped(item, idx) {
     if (diffSection) body.appendChild(diffSection)
   }
 
+  // 服从调剂：同专业组其他专业
+  if (groupMajorMap && item.g) {
+    const mapKey = item.n + '\x00' + item.gc
+    const cardKey = item.n + '\x00' + item.g
+    const majors = groupMajorMap.get(mapKey)
+    if (majors && majors.length > 1) {
+      const others = majors.filter(m => m.n !== item.g)
+      if (others.length > 0) {
+        const _isOpen = state.assistantAdjustExpanded[cardKey]
+        body.appendChild(makeOtherMajorsHeader(cardKey, others, _isOpen))
+        if (_isOpen) {
+          body.appendChild(makeOtherMajorsBody(others))
+        }
+      }
+    }
+  }
+
   card.appendChild(body)
   return card
+}
+
+function makeOtherMajorsHeader(mapKey, others, isOpen) {
+  const wrapper = document.createElement('div')
+  wrapper.className = 'card-row card-remark-header'
+  wrapper.dataset.adjustKey = mapKey
+  wrapper.innerHTML = '<span class="card-label">同专业组其他专业</span>' +
+    '<span class="card-remark-toggle">' + (isOpen ? '收起<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>' : '展开▼(' + others.length + '个)') + '</span>'
+  wrapper.addEventListener('click', function (e) {
+    e.stopPropagation()
+    toggleAdjustExpand(this.dataset.adjustKey)
+  })
+  return wrapper
+}
+
+function makeOtherMajorsBody(others) {
+  const list = document.createElement('div')
+  list.className = 'card-row card-remark-body'
+  const listInner = document.createElement('div')
+  listInner.className = 'adjust-majors-list'
+  for (const m of others) {
+    const item = document.createElement('span')
+    item.className = 'adjust-major-item'
+    item.innerHTML = '· <span class="major-name">' + escHtml(m.n) + '</span>' +
+      (m.code ? ' <span class="major-detail">(代号' + escHtml(m.code) + ')</span>' : '') +
+      (m.planCount ? ' <span class="major-detail">计划' + m.planCount + '人</span>' : '')
+    listInner.appendChild(item)
+  }
+  list.appendChild(listInner)
+  return list
+}
+
+function toggleAdjustExpand(mapKey) {
+  state.assistantAdjustExpanded[mapKey] = !state.assistantAdjustExpanded[mapKey]
+  // 重新渲染志愿推荐结果
+  if (DOM.assistantResults.style.display !== 'none') {
+    startAssistant()
+  }
 }
 
 function renderCardSingle(record, idx) {
@@ -787,6 +888,16 @@ function onToggleHideCoop() {
   state.hideCoop = !state.hideCoop
   updateFilterUI()
   doSearch()
+}
+
+function onToggleAdjust() {
+  state.assistantAdjust = !state.assistantAdjust
+  state.assistantAdjustExpanded = {}
+  updateFilterUI()
+  // 如果当前在志愿推荐模式，刷新结果
+  if (DOM.assistantResults.style.display !== 'none') {
+    startAssistant()
+  }
 }
 
 function onToggleDarkMode() {
@@ -1021,6 +1132,7 @@ function updateFilterUI() {
   updateToggleUI('toggle-only2026', state.only2026)
   updateToggleUI('toggle-hide-sports', state.hideSports)
   updateToggleUI('toggle-hide-coop', state.hideCoop)
+  updateToggleUI('toggle-adjust', state.assistantAdjust)
 
   // Score/rank row visibility: 仅在选择2026单年份时隐藏
   // 在「全部」模式中即使勾选「仅2026招生」也保持可见，因为分组数据仍有2024/2025的分数排名
@@ -1663,7 +1775,9 @@ function renderAssistantResults(results, userScore, userRank) {
     for (let i = 0; i < items.length; i++) {
       const g = items[i]
       // 复用标准卡片渲染
-      const card = renderCardGrouped(g, 'as-' + t + '-' + i)
+      // 服从调剂时传入专业组映射表
+      var _adjustMap = state.assistantAdjust ? buildGroupMajorMap() : null
+      const card = renderCardGrouped(g, 'as-' + t + '-' + i, _adjustMap)
       body.appendChild(card)
     }
 
@@ -1946,6 +2060,7 @@ function bindEvents() {
   document.getElementById('toggle-only2026').addEventListener('click', onToggleOnly2026)
   document.getElementById('toggle-hide-sports').addEventListener('click', onToggleHideSports)
   document.getElementById('toggle-hide-coop').addEventListener('click', onToggleHideCoop)
+  document.getElementById('toggle-adjust').addEventListener('click', onToggleAdjust)
   DOM.btnDarkMode.addEventListener('click', onToggleDarkMode)
 
   // Mobile assistant toggle
