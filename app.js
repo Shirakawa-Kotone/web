@@ -704,7 +704,7 @@ function makeRemarkToggle(idx, isOpen) {
   row.className = 'card-row card-remark-header'
   row.dataset.remarkIdx = idx
   row.innerHTML = '<span class="card-label">备注</span>' +
-    '<span class="card-remark-toggle">' + (isOpen ? '收起▲' : '展开▼') + '</span>'
+    '<span class="card-remark-toggle">' + (isOpen ? '收起<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>' : '展开▼') + '</span>'
   row.addEventListener('click', function (e) {
     e.stopPropagation()
     toggleRemark(parseInt(this.dataset.remarkIdx))
@@ -1226,7 +1226,7 @@ function toggleDemoRemark() {
       remarkBody.style.display = state.tutorialRemarkExpanded ? '' : 'none'
     }
     if (toggleEl) {
-      toggleEl.textContent = state.tutorialRemarkExpanded ? '收起▲' : '展开▼'
+      toggleEl.innerHTML = state.tutorialRemarkExpanded ? '收起<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>' : '展开▼'
     }
   }
 }
@@ -1312,7 +1312,7 @@ function renderTutorialMerged(d, stepIdx) {
       (d.a ? '<div class="card-row row-highlight' + (stepIdx === 8 ? ' row-current' : '') + '" id="hl-8"><span class="gp-label">2024</span><span class="card-value highlight">' + d.a.s + '分</span><span class="card-value highlight">最低排名 ' + d.a.r + '</span><span class="card-value">录取' + d.a.e + '人</span></div>' : '') +
       (d.b ? '<div class="card-row row-highlight' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9"><span class="gp-label">2025</span><span class="card-value highlight">' + d.b.s + '分</span><span class="card-value highlight">最低排名 ' + d.b.r + '</span><span class="card-value">录取' + d.b.e + '人</span></div>' : '') +
       (d.d ? '<div class="card-row gp-year' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10"><span class="gp-label">2026</span><span class="card-value">专业代号 ' + escHtml(d.d.code) + '</span><span class="card-value">计划录取' + d.d.e + '人</span></div>' : '') +
-      (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 11 ? ' row-current' : '') + '" id="hl-11" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起▲' : '展开▼') + '</span></div>' : '') +
+      (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 11 ? ' row-current' : '') + '" id="hl-11" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>' : '展开▼') + '</span></div>' : '') +
       (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 11 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
       (d._diffs ? '<div class="diff-section' + (stepIdx === 12 ? ' row-current' : '') + '" id="hl-12">' + renderTutorialDiffs(d._diffs) + '</div>' : '') +
     '</div></div>'
@@ -1335,7 +1335,7 @@ function renderTutorialSingle2025(d, stepIdx) {
       '<div class="card-row row-highlight' + ((stepIdx === 7 || stepIdx === 8) ? ' row-current' : '') + '" id="hl-7"><span class="card-label">最低分</span><span class="card-value highlight">' + d.score + '</span><span class="card-label">最低排名</span><span class="card-value highlight">' + d.rank + '</span></div>' +
       '<div class="card-row' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9"><span class="card-label">录取</span><span class="card-value">' + d.enrolled + '人</span></div>' +
       '<div class="card-row' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10"><span class="card-label">收费标准</span><span class="card-value">' + d.fee + '元/年</span></div>' +
-      (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 11 ? ' row-current' : '') + '" id="hl-11" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起▲' : '展开▼') + '</span></div>' : '') +
+      (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 11 ? ' row-current' : '') + '" id="hl-11" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>' : '展开▼') + '</span></div>' : '') +
       (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 11 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
     '</div></div>'
 }
@@ -1357,7 +1357,7 @@ function renderTutorialSingle2026(d, stepIdx) {
       '<div class="card-row' + (stepIdx === 7 ? ' row-current' : '') + '" id="hl-7"><span class="card-label">专业代号</span><span class="card-value">' + escHtml(d.majorCode) + '</span></div>' +
       '<div class="card-row' + (stepIdx === 8 ? ' row-current' : '') + '" id="hl-8"><span class="card-label">计划录取</span><span class="card-value highlight">' + d.planCount + '人</span></div>' +
       '<div class="card-row' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9"><span class="card-label">收费标准</span><span class="card-value">' + d.fee + '元/年</span></div>' +
-      (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起▲' : '展开▼') + '</span></div>' : '') +
+      (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>' : '展开▼') + '</span></div>' : '') +
       (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 10 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
     '</div></div>'
 }

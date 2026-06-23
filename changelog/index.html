@@ -12,49 +12,48 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: #f5f5f5;
-  color: #333;
+  background: #121212;
+  color: #e0e0e0;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ===== Dark Mode ===== */
-@media (prefers-color-scheme: dark) {
-  body { background: #121212; color: #fff; }
-  .nav-bar {
-    background: rgba(30,30,46,0.85); border-bottom-color: #333;
-  }
-  .nav-bar .brand { color: #fff; }
-  .nav-bar .brand small { color: #999; }
-  .nav-bar a { color: #66CCFF; }
-  .nav-bar a:hover { color: #99DDFF; }
-  .section-title { border-bottom-color: #333; }
-  .version-marker { background: #0d2d3d; color: #66CCFF; }
-  .tag-feat { background: #0a2d2a; color: #39C5BB; }
-  .tag-fix { background: #2a1111; color: #ff6b6b; }
-  .tag-chore { background: #2a2a1a; color: #d4d44a; }
-  .tag-refactor { background: #0d1a3d; color: #66AAFF; }
-  code { background: #2a2a2a; color: #ccc; border-color: #333; }
-  blockquote {
-    border-left-color: #66CCFF; color: #ddd;
-    background: rgba(102,204,255,0.04);
-  }
-  .footer-link { color: #66CCFF; }
-  .footer-link:hover { color: #99DDFF; }
-  .back-top { background: rgba(102,204,255,0.18); color: #66CCFF; }
-  .back-top:hover { background: rgba(102,204,255,0.35); }
-  h1, h2, h3 { color: #fff; }
-  hr { border-top-color: #333; }
-  .loading { color: #999; }
+/* ===== Nav (dark) ===== */
+.nav-bar {
+  background: rgba(30,30,46,0.85); border-bottom-color: #333;
 }
+.nav-bar .brand { color: #fff; }
+.nav-bar .brand small { color: #999; }
+.nav-bar a { color: #66CCFF; }
+.nav-bar a:hover { color: #99DDFF; }
+
+/* ===== Dark Mode Colors ===== */
+.section-title { border-bottom-color: #333; }
+.version-marker { background: #0d2d3d; color: #66CCFF; }
+.tag-feat { background: #0a2d2a; color: #39C5BB; }
+.tag-fix { background: #2a1111; color: #ff6b6b; }
+.tag-chore { background: #2a2a1a; color: #d4d44a; }
+.tag-refactor { background: #0d1a3d; color: #66AAFF; }
+code { background: #2a2a2a; color: #ccc; border-color: #333; }
+blockquote {
+  border-left-color: #66CCFF; color: #ddd;
+  background: rgba(102,204,255,0.04);
+}
+.footer-link { color: #66CCFF; }
+.footer-link:hover { color: #99DDFF; }
+.back-top { background: rgba(102,204,255,0.18); color: #66CCFF; }
+.back-top:hover { background: rgba(102,204,255,0.35); }
+h1, h2, h3 { color: #fff; }
+hr { border-top-color: #333; }
+.loading { color: #999; }
 
 /* ===== Nav ===== */
 .nav-bar {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(255,255,255,0.85);
+  background: rgba(30,30,46,0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #333;
   padding: 12px 20px;
   display: flex;
   align-items: center;
@@ -64,15 +63,15 @@ body {
 .nav-bar .brand {
   font-size: 15px; font-weight: 600; letter-spacing: 0.3px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  color: #333;
+  color: #fff;
 }
 .nav-bar .brand small { font-weight: 400; font-size: 12px; color: #999; margin-left: 6px; }
 .nav-bar .nav-links { display: flex; gap: 16px; flex-shrink: 0; }
 .nav-bar a {
-  text-decoration: none; color: #2DA89F; font-size: 14px; font-weight: 500;
+  text-decoration: none; color: #66CCFF; font-size: 14px; font-weight: 500;
   transition: color 0.2s;
 }
-.nav-bar a:hover { color: #39C5BB; }
+.nav-bar a:hover { color: #99DDFF; }
 
 /* ===== Container ===== */
 .container {
@@ -113,7 +112,7 @@ h3 {
 @media (max-width: 600px) { h3 { font-size: 15px; } }
 
 hr {
-  border: none; border-top: 1px solid #e0e0e0; margin: 32px 0;
+  border: none; border-top: 1px solid #333; margin: 32px 0;
 }
 
 p { margin-bottom: 12px; }
@@ -123,15 +122,16 @@ li > ul { margin: 4px 0 4px; }
 
 code {
   font-family: "SF Mono", "Menlo", "Monaco", "Consolas", monospace;
-  font-size: 0.88em; background: #f0f0f0; padding: 2px 7px;
-  border-radius: 4px; border: 1px solid #e0e0e0;
-  color: #333;
+  font-size: 0.88em; background: #2a2a2a; padding: 2px 7px;
+  border-radius: 4px; border: 1px solid #333;
+  color: #ccc;
 }
 pre { display: none; }
 
 blockquote {
-  border-left: 3px solid #39C5BB; padding: 8px 16px; margin: 16px 0;
-  color: #f0f0f0;
+  border-left: 3px solid #66CCFF; padding: 8px 16px; margin: 16px 0;
+  color: #ddd;
+  background: rgba(102,204,255,0.04);
 }
 
 strong { font-weight: 600; }
@@ -139,7 +139,7 @@ strong { font-weight: 600; }
 /* ===== Version Marker ===== */
 .version-marker {
   display: inline-block; font-size: 12px; font-weight: 500;
-  background: #edf9f7; color: #2DA89F; padding: 1px 10px; border-radius: 10px;
+  background: #0d2d3d; color: #66CCFF; padding: 1px 10px; border-radius: 10px;
   vertical-align: middle;
 }
 
@@ -148,30 +148,30 @@ strong { font-weight: 600; }
   display: inline-block; font-size: 11px; font-weight: 500;
   padding: 1px 8px; border-radius: 4px; margin: 0 3px; letter-spacing: 0.3px;
 }
-.tag-feat { background: #E0F7F5; color: #00897B; }
-.tag-fix { background: #fff5f5; color: #e64340; }
-.tag-chore { background: #f5f0d0; color: #887a1a; }
-.tag-refactor { background: #E3F2FD; color: #1565C0; }
+.tag-feat { background: #0a2d2a; color: #39C5BB; }
+.tag-fix { background: #2a1111; color: #ff6b6b; }
+.tag-chore { background: #2a2a1a; color: #d4d44a; }
+.tag-refactor { background: #0d1a3d; color: #66AAFF; }
 
 /* ===== Section Title ===== */
 .section-title {
   display: flex; align-items: center; gap: 10px;
-  border-bottom: 2px solid #39C5BB; padding-bottom: 8px;
+  border-bottom: 2px solid #333; padding-bottom: 8px;
 }
 
 /* ===== Footer Link ===== */
 .footer-link {
   display: inline-block; margin-top: 40px; font-size: 14px;
-  color: #2DA89F; text-decoration: none; font-weight: 500;
+  color: #66CCFF; text-decoration: none; font-weight: 500;
 }
-.footer-link:hover { color: #39C5BB; text-decoration: underline; }
+.footer-link:hover { color: #99DDFF; text-decoration: underline; }
 
 /* ===== Loading ===== */
 .loading {
   text-align: center; padding: 80px 20px; color: #999;
 }
 .loading .spinner {
-  width: 28px; height: 28px; border: 3px solid #e0e0e0;
+  width: 28px; height: 28px; border: 3px solid #333;
   border-top-color: #39C5BB;
   border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px;
 }
@@ -188,14 +188,14 @@ strong { font-weight: 600; }
 .back-top {
   position: fixed; bottom: 28px; right: 28px; z-index: 99;
   width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(57,197,187,0.12); color: #39C5BB;
-  border: none; cursor: pointer; font-size: 18px; line-height: 40px;
-  text-align: center; opacity: 0; pointer-events: none;
+  background: rgba(102,204,255,0.18); color: #66CCFF;
+  border: none; cursor: pointer; opacity: 0; pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
   transition: opacity 0.3s, background 0.2s; backdrop-filter: blur(4px);
 }
 .back-top.visible { opacity: 1; pointer-events: auto; }
-.back-top:hover { background: rgba(57,197,187,0.22); }
-.back-top::after { content: "↑"; }
+.back-top:hover { background: rgba(102,204,255,0.35); }
+.back-top svg { width: 20px; height: 20px; }
 </style>
 </head>
 <body>
@@ -222,7 +222,9 @@ strong { font-weight: 600; }
 </div>
 
 <!-- Back to Top -->
-<button class="back-top" id="backTop" aria-label="返回顶部"></button>
+<button class="back-top" id="backTop" aria-label="返回顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
 <script>
