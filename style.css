@@ -577,6 +577,13 @@ input[type="number"] {
   margin-left: 4px;
 }
 
+.school-rank {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-left: 2px;
+}
+
 .card-body {
   font-size: 13px;
 }

@@ -1266,7 +1266,30 @@ function getSchoolTagHtml(name) {
   const tag = getSchoolTag(name)
   if (!tag) return ''
   const parts = tag.split('&')
-  return parts.map(t => '<span class="school-tag tag-' + t + '">' + t + '</span>').join('')
+  let html = parts.map(t => '<span class="school-tag tag-' + t + '">' + t + '</span>').join('')
+  const rank = getSchoolRanking(name)
+  if (rank && parts.includes('211')) {
+    html += '<span class="school-rank">软科#' + rank + '</span>'
+  }
+  return html
+}
+
+function getSchoolRanking(name) {
+  if (!window.SCHOOL_RANKINGS) return null
+  if (!getSchoolRanking._map) {
+    const map = new Map()
+    const data = window.SCHOOL_RANKINGS
+    const norm = s => s.replace(/（/g, '(').replace(/）/g, ')')
+    if (data.rankings_985) {
+      for (const r of data.rankings_985) map.set(norm(r.name), r.rank)
+    }
+    if (data.rankings_211_only) {
+      for (const r of data.rankings_211_only) map.set(norm(r.name), r.rank)
+    }
+    getSchoolRanking._map = map
+  }
+  const normalized = name.replace(/（/g, '(').replace(/）/g, ')')
+  return getSchoolRanking._map.get(normalized) || null
 }
 
 // ============================================================
