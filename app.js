@@ -88,6 +88,7 @@ const state = {
   only2026: false,
   hideSports: false,
   hideCoop: false,
+  assistantHideCoop: false,
   darkMode: false,
 
   // UI
@@ -902,6 +903,14 @@ function onToggleHideCoop() {
   doSearch()
 }
 
+function onAssistantToggleHideCoop() {
+  state.assistantHideCoop = !state.assistantHideCoop
+  updateToggleUI('as-toggle-hide-coop', state.assistantHideCoop)
+  if (DOM.assistantResults.style.display !== 'none') {
+    startAssistant()
+  }
+}
+
 function onToggleAdjust() {
   state.assistantAdjust = !state.assistantAdjust
   state.assistantAdjustExpanded = {}
@@ -970,6 +979,8 @@ function doReset() {
   state.only2026 = false
   state.hideSports = false
   state.hideCoop = false
+  state.assistantHideCoop = false
+  updateToggleUI('as-toggle-hide-coop', false)
   syncInputsFromState()
   updateFilterUI()
   doSearch()
@@ -1188,7 +1199,6 @@ function updateFilterUI() {
   updateToggleUI('toggle-only2026', state.only2026)
   updateToggleUI('toggle-hide-sports', state.hideSports)
   updateToggleUI('toggle-hide-coop', state.hideCoop)
-  updateToggleUI('as-toggle-hide-coop', state.hideCoop)
   updateToggleUI('toggle-adjust', state.assistantAdjust)
 
   // Score/rank row visibility: 仅在选择2026单年份时隐藏
@@ -1837,7 +1847,7 @@ function _execAssistant(score, rank, srCode, regionProvinces, keyword) {
 
     // Skip sports/coop based on existing filters
     if (state.hideSports && (g.g.indexOf('体育') !== -1 || g.n.indexOf('体育') !== -1)) continue
-    if (state.hideCoop && (g.g.indexOf('中外合作') !== -1 || (g.remark && g.remark.indexOf('中外合作') !== -1))) continue
+    if (state.assistantHideCoop && (g.g.indexOf('中外合作') !== -1 || (g.remark && g.remark.indexOf('中外合作') !== -1))) continue
 
     // Calculate tier
     const tier = calculateTier(score, rank, g, algoVal)
@@ -2216,7 +2226,7 @@ function bindEvents() {
   document.getElementById('toggle-hide-sports').addEventListener('click', onToggleHideSports)
   document.getElementById('toggle-hide-coop').addEventListener('click', onToggleHideCoop)
   document.getElementById('toggle-adjust').addEventListener('click', onToggleAdjust)
-  document.getElementById('as-toggle-hide-coop').addEventListener('click', onToggleHideCoop)
+  document.getElementById('as-toggle-hide-coop').addEventListener('click', onAssistantToggleHideCoop)
   DOM.btnDarkMode.addEventListener('click', onToggleDarkMode)
 
   // Mobile assistant toggle
