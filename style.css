@@ -578,10 +578,10 @@ input[type="number"] {
 }
 
 .school-rank {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-weight: 500;
-  margin-left: 2px;
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 600;
+  margin-left: 4px;
 }
 
 .card-body {
