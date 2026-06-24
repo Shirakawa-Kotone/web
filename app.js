@@ -979,8 +979,6 @@ function doReset() {
   state.only2026 = false
   state.hideSports = false
   state.hideCoop = false
-  state.assistantHideCoop = false
-  updateToggleUI('as-toggle-hide-coop', false)
   syncInputsFromState()
   updateFilterUI()
   doSearch()
