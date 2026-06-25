@@ -244,7 +244,7 @@ function buildMergedCache() {
   const data = state.allData
   for (let i = 0; i < data.length; i++) {
     const r = data[i]
-    const key = r[3] + '\x00' + r[5]
+    const key = r[3] + '\x00' + r[5] + '\x00' + (r[15] || '')
     let grp = groups.get(key)
     if (!grp) {
       grp = {
