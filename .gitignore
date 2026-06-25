@@ -16,5 +16,5 @@ CLAUDE.md
 .settings/
 
 # Data processing scripts & raw data
+data/
 *.xlsx
-scripts/

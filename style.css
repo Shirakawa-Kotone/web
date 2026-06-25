@@ -1126,17 +1126,17 @@ input[type="number"] {
    ============================================================ */
 .float-btn {
   position: fixed;
-  right: 3.5vw;
-  bottom: 14vw;
-  width: 8vw;
-  height: 8vw;
+  right: 12px;
+  bottom: 100px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: rgba(0,0,0,0.65);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0.4vw 1.6vw rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   z-index: 50;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -1151,8 +1151,8 @@ input[type="number"] {
 }
 
 .float-arrow {
-  width: 4vw;
-  height: 4vw;
+  width: 18px;
+  height: 18px;
   display: block;
 }
 
@@ -1721,7 +1721,7 @@ input[type="number"] {
   }
 
   .float-btn {
-    right: 30px;
+    right: 24px;
     bottom: 40px;
   }
 
