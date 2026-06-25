@@ -1028,11 +1028,15 @@ function scrollToTop() {
       DOM.asColumns.scrollTop = 0
     }
   } else {
-    // 正常搜索模式
+    // 正常搜索模式：展开筛选栏
     state.filterHidden = false
+    DOM.filterBar.classList.remove('hidden')
+    DOM.toggleFilter.textContent = '收起筛选'
     updateFilterUI()
+    // 滚动到页面顶部（兼容不同滚动容器）
     DOM.resultList.scrollTop = 0
-    DOM.resultList.querySelector('#result-top').scrollIntoView()
+    window.scrollTo(0, 0)
+    DOM.floatBtn.style.display = 'none'
   }
 }
 
