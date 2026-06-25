@@ -254,6 +254,26 @@ function openScoreChart() {
   const overlay = document.getElementById('score-chart-overlay')
   overlay.style.display = 'flex'
 
+  // 手机端横屏提示控制
+  function checkOrientation() {
+    var toast = document.getElementById('rotate-toast')
+    if (!toast) return
+    if (window.innerWidth < 860 && window.innerHeight > window.innerWidth) {
+      toast.style.display = 'flex'
+    } else {
+      toast.style.display = 'none'
+    }
+  }
+  checkOrientation()
+  // 尝试锁定横屏
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('landscape').catch(function(){})
+  }
+  // 窗口大小变化时重新检测
+  window.addEventListener('resize', checkOrientation)
+  // 保存引用以便 close 时移除
+  window._chartOrientHandler = checkOrientation
+
   if (scoreChartInstance) {
     scoreChartInstance.resize()
     return
@@ -286,6 +306,15 @@ function openScoreChart() {
 
 function closeScoreChart() {
   document.getElementById('score-chart-overlay').style.display = 'none'
+  // 解除横屏锁定
+  if (screen.orientation && screen.orientation.unlock) {
+    screen.orientation.unlock()
+  }
+  // 移除 resize 检测
+  if (window._chartOrientHandler) {
+    window.removeEventListener('resize', window._chartOrientHandler)
+    window._chartOrientHandler = null
+  }
   if (scoreChartInstance) {
     scoreChartInstance.dispose()
     scoreChartInstance = null
