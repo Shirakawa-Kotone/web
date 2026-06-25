@@ -1344,14 +1344,13 @@ input[type="number"] {
 
 @media (min-width: 860px) {
   .score-chart-overlay {
-    padding: 40px;
+    padding: 0;
   }
   .score-chart-modal {
     position: relative;
     top: auto; left: auto; right: auto; bottom: auto;
-    width: 90vw;
-    max-width: 1100px;
-    height: 85vh;
+    width: 98vw;
+    height: 96vh;
     border-radius: 12px;
     box-shadow: 0 8px 40px rgba(0,0,0,0.15);
   }
