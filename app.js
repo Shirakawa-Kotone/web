@@ -244,37 +244,60 @@ function buildMergedCache() {
   const data = state.allData
   for (let i = 0; i < data.length; i++) {
     const r = data[i]
-    const key = r[3] + '\x00' + r[5] + '\x00' + (r[15] || '')
+    const key = r[3] + '\x00' + r[5]
     let grp = groups.get(key)
     if (!grp) {
       grp = {
         p: r[1], c: r[2], n: r[3], s: r[4], g: r[5],
-        a: null, b: null, d: null,
-        batch: r[9], plan: r[10], gc: r[11], fee: r[12],
-        remark: r[13], _sd: r[14],
-        _vr: {},
+        rows: new Map(),
         _diffs: null,
       }
       groups.set(key, grp)
     }
+    // 按收费分组，同专业名下不同收费的记录形成独立行
+    const feeKey = String(r[12])
+    let row = grp.rows.get(feeKey)
+    if (!row) {
+      row = {
+        a: null, b: null, d: null,
+        batch: r[9], plan: r[10], gc: r[11], fee: r[12],
+        remark: r[13], _sd: r[14],
+        _vr: {},
+      }
+      grp.rows.set(feeKey, row)
+    }
     const yr = r[0]
-    if (!grp._vr[yr]) grp._vr[yr] = {}
-    grp._vr[yr].gc = r[11]
-    grp._vr[yr].batch = r[9]
-    grp._vr[yr].plan = r[10]
-    grp._vr[yr].fee = r[12]
+    if (!row._vr[yr]) row._vr[yr] = {}
+    row._vr[yr].gc = r[11]
+    row._vr[yr].batch = r[9]
+    row._vr[yr].plan = r[10]
+    row._vr[yr].fee = r[12]
 
     if (yr === '2024') {
-      if (!grp.a) grp.a = { s: r[6], r: r[7], e: r[8] }
+      if (!row.a) row.a = { s: r[6], r: r[7], e: r[8] }
     } else if (yr === '2025') {
-      if (!grp.b) grp.b = { s: r[6], r: r[7], e: r[8] }
+      if (!row.b) row.b = { s: r[6], r: r[7], e: r[8] }
     } else {
-      if (!grp.d) grp.d = { s: r[6], r: r[7], e: r[8], code: r[15], link: r[16] || '' }
-      grp.c = r[2]; grp.gc = r[11]; grp.batch = r[9]
-      grp.plan = r[10]; grp.fee = r[12]
+      if (!row.d) row.d = { s: r[6], r: r[7], e: r[8], code: r[15], link: r[16] || '' }
+      // 2026 数据覆盖行级别字段，优先使用最新信息
+      row.gc = r[11]; row.batch = r[9]
+      row.plan = r[10]; row.fee = r[12]
     }
   }
-  state.mergedCache = Array.from(groups.values())
+  // 摊平：每行成为一个独立条目
+  state.mergedCache = []
+  for (const grp of groups.values()) {
+    for (const row of grp.rows.values()) {
+      state.mergedCache.push({
+        p: grp.p, c: grp.c, n: grp.n, s: grp.s, g: grp.g,
+        a: row.a, b: row.b, d: row.d,
+        batch: row.batch, plan: row.plan, gc: row.gc, fee: row.fee,
+        remark: row.remark, _sd: row._sd,
+        _vr: row._vr,
+        _diffs: null,
+      })
+    }
+  }
 }
 
 function buildBatchList() {
