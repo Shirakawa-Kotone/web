@@ -8,7 +8,7 @@
 // 深色模式首屏同步（与主站一致，避免闪烁）
 (function(){try{var d=localStorage.getItem('dark_mode');if(d===null)d=window.matchMedia('(prefers-color-scheme:dark)').matches;else d=d==='true';if(d)document.documentElement.classList.add('dark-mode')}catch(e){}})();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.6.0/echarts.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; }
@@ -134,13 +134,11 @@ function getThemeOpt(dark) {
     ],
     dataZoom: [
       {
-        type: 'inside', start: 0, end: 100,
+        type: 'inside', start: 5, end: 95,
         zoomOnMouseWheel: true,
-        moveOnMouseMove: true,
-        moveOnMouseWheel: true,
-        preventDefaultMouseMove: true
+        moveOnMouseWheel: true
       },
-      { type: 'slider', start: 0, end: 100, bottom: 15, height: 48,
+      { type: 'slider', start: 5, end: 95, bottom: 15, height: 48,
         borderColor: dark ? '#555' : '#bbb',
         backgroundColor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(47,69,84,0.05)',
         fillerColor: dark ? 'rgba(102,204,255,0.3)' : 'rgba(57,197,187,0.3)',
