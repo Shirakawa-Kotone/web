@@ -187,7 +187,7 @@ function expandAllData(callback) {
         out[i] = [
           yearMap[r[0]] || '2024',
           provincePool[r[1]] || '',
-          String(r[2] || ''),
+          String(r[2] || '').padStart(4, '0'),
           schoolNamePool[r[3]] || '',
           srCode,
           groupNamePool[r[5]] || '',

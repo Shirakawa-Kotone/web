@@ -153,7 +153,17 @@ function getThemeOpt(dark) {
 }
 
 const chart = echarts.init(document.getElementById('chart'));
-chart.setOption(getThemeOpt(isDark));
+const opts = getThemeOpt(isDark);
+// 精确指针（鼠标）允许拖动，粗略指针（触屏）只允许缩放
+// 使用 pointer media query 区分，不依赖页面宽度
+const hasFinePointer = window.matchMedia('(pointer: fine)').matches;
+opts.dataZoom.unshift({
+  type: 'inside', start: 0, end: 100,
+  zoomOnMouseWheel: true,
+  moveOnMouseMove: hasFinePointer,
+  moveOnMouseWheel: hasFinePointer
+});
+chart.setOption(opts);
 window.addEventListener('resize', function() { chart.resize(); });
 
 // 监听深色模式切换（通过 localStorage）
