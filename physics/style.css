@@ -1870,3 +1870,31 @@ input[type="number"] {
 .dark-mode .footer-links a:hover {
   color: #66CCFF;
 }
+
+/* ============================================================
+   分数自动换算排名 — 高亮输入框
+   ============================================================ */
+.as-rank-auto {
+  background-color: #fff3cd !important;
+  border-color: #ffc107 !important;
+  color: #856404 !important;
+}
+.as-rank-auto:focus {
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3) !important;
+  border-color: #ffc107 !important;
+}
+.dark-mode .as-rank-auto {
+  background-color: #4a3c0e !important;
+  border-color: #b8860b !important;
+  color: #ffd700 !important;
+}
+
+.as-rank-hint {
+  font-size: 11px;
+  color: #d4a017;
+  margin-left: 2px;
+  font-weight: normal;
+}
+.dark-mode .as-rank-hint {
+  color: #ffd700;
+}
