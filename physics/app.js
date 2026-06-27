@@ -679,6 +679,8 @@ function renderCardGrouped(item, idx, groupMajorMap) {
   if (item.g) body.appendChild(makeRow('专业名称', item.g, 'full'))
   // Group code
   if (item.gc) body.appendChild(makeRow('专业组代码', item.gc))
+  // 收费标准
+  if (item.fee) body.appendChild(makeRow('收费标准', item.fee + '元/年'))
 
   // 2024 row
   if (item.a) {
@@ -920,6 +922,10 @@ function onYearChange(year) {
     DOM.inputMaxRank.value = ''
   }
   state.year = year
+  // 切换到具体年份时取消「仅2026招生」勾选
+  if (year) {
+    state.only2026 = false
+  }
   updateFilterUI()
   if (year) splitByYear()
   doSearch()
@@ -1276,6 +1282,11 @@ function updateFilterUI() {
   // Score/rank row visibility: 仅在选择2026单年份时隐藏
   // 在「全部」模式中即使勾选「仅2026招生」也保持可见，因为分组数据仍有2024/2025的分数排名
   DOM.scoreRow.style.display = state.year === '2026' ? 'none' : 'flex'
+  // 「仅2026招生」仅在「全部」模式下显示，选中具体年份时隐藏
+  const toggleOnly2026 = document.getElementById('toggle-only2026')
+  if (toggleOnly2026) {
+    toggleOnly2026.style.display = state.year ? 'none' : ''
+  }
 }
 
 function updateToggleUI(id, isOn) {
