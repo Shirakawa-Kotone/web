@@ -1771,7 +1771,7 @@ function renderTutorialAssistant(d, stepIdx) {
     '</div>'
   }
   return '<div class="demo-card">' +
-    '<div class="assistant-section" style="padding:0">' +
+    '<div class="assistant-section" style="padding:0;display:block">' +
       '<div class="as-toggle-row" style="cursor:default"><span class="as-toggle-title">📋 志愿填报辅助</span></div>' +
       body +
     '</div></div>'
