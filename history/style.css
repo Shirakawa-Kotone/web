@@ -340,7 +340,15 @@ input[type="number"] {
 .year-tabs {
   display: flex;
   gap: 6px;
-  flex: none;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.year-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
@@ -353,6 +361,7 @@ input[type="number"] {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
 }
 
 .tab.active {
