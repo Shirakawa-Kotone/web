@@ -1,0 +1,31 @@
+{
+  "name": "江西省高考录取数据查询",
+  "short_name": "江西高考查询",
+  "description": "江西省2024-2026年高考录取数据查询，支持院校、专业、分数、排名等多维度筛选与志愿填报辅助",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f0f4f8",
+  "theme_color": "#39C5BB",
+  "categories": ["education", "utilities"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
