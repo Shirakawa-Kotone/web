@@ -1385,16 +1385,18 @@ const TUTORIAL = {
   },
   assistant: {
     steps: [
-      { title: '高考分数', desc: '输入你的高考总分。系统根据分数自动匹配合适的院校范围。此处示范填写 620 分。' },
-      { title: '全省排名', desc: '你的高考全省排名。比分数更能精准反映录取难度。如果你只填了分数未填排名，点击「志愿推荐」后系统会自动从一分一段表换算对应排名。' },
-      { title: '选科要求', desc: '选择你的高考选科组合。系统会在推荐时优先匹配选科符合的专业组，同时也会宽松匹配选科相符但不完全一致的专业组，扩大选择范围。' },
-      { title: '地区偏好', desc: '按院校所在地筛选，支持按省份或按区域选择。不选则推荐全国所有院校。' },
-      { title: '专业意向', desc: '输入感兴趣的专业关键词（如「经济学 法学」），用空格分隔。系统会搜索专业名称中包含这些关键词的专业组。' },
+      { title: '高考分数', desc: '输入你的高考总分。系统根据分数匹配合适的院校范围。此处示范填写 620 分。' },
+      { title: '全省排名', desc: '你的全省排名，比分数更能精准反映录取位置。只填分数未填排名时，点击「志愿推荐」后自动从一分一段表换算。' },
+      { title: '选科要求', desc: '选择你的选科组合。推荐时优先匹配选科完全符合的专业组，也会宽松匹配选科相符但不完全一致的专业组。' },
+      { title: '地区偏好', desc: '按院校所在地筛选，支持省份或区域。不选则推荐全国所有院校。' },
+      { title: '专业意向', desc: '输入感兴趣的专业关键词（如「经济学 法学」），用空格分隔。系统搜索专业名称中包含这些关键词的专业组。' },
       { title: '批次选择', desc: '限定推荐结果在某个录取批次范围内。不选则包含所有批次。' },
-      { title: '推荐算法', desc: '选择排名参考策略。「默认」参考 2024–2025 年平均排名划定冲稳保。「按最低/最高」使用历史最低/最高排名做激进/保守判断。「仅2024/仅2025」完全参照单年数据。' },
-      { title: '服从调剂', desc: '开启后，每个被推荐的专业组下方会展开同组内的其他专业，方便你了解该专业组还有哪些专业可选。' },
-      { title: '筛选开关', desc: '「隐藏中外合作」过滤掉中外合作办学项目；「仅推选985/211」将推荐范围限制在 985/211 重点院校。' },
-      { title: '冲稳保结果', desc: '推荐结果按「冲」「稳」「保」三栏排列。冲—录取排名高于你；稳—与你相当；保—排名低于你。点击卡片可查看详情。' },
+      { title: '推荐算法', desc: '选择排名参考策略。「默认」参考历史平均排名划定冲稳保。「按最低/最高」做激进/保守判断。「仅2024/仅2025」完全参照单年数据。' },
+      { title: '服从调剂', desc: '开启后，每个被推荐的专业组下方展开同组内的其他专业，方便在一组内找平衡。' },
+      { title: '筛选开关', desc: '「隐藏中外合作」过滤中外合作办学项目；「仅推选985/211」限制在重点院校范围。' },
+      { title: '冲—冲刺志愿', desc: '录取排名高于你现有排名的院校（目标 > 你的排名），需要争取才能录取。适合放入冲刺栏，建议选 2-3 个。' },
+      { title: '稳—稳妥志愿', desc: '录取排名与你现有排名大致相当的院校（目标 ≈ 你的排名），录取概率较大，是志愿方案的核心部分。' },
+      { title: '保—保底志愿', desc: '录取排名低于你现有排名的院校（目标 < 你的排名），作为保底确保有学可上。建议选 2-3 个。' },
     ],
     demo: {
       score: '620',
@@ -1616,48 +1618,51 @@ function renderTutorialDiffs(diffs) {
 function renderTutorialAssistant(d, stepIdx) {
   var hl = function (s) { return (stepIdx === s ? ' row-current' : '') }
   var rankHint = '<span class="as-rank-hint">（自动换算）</span>'
-  // 面板部分（步骤 0-8）
+  // 面板部分（步骤 0-8）：每步仅高亮对应半行/元件，不整行高亮
   var body = ''
-  if (stepIdx < 9) {
-    body = '<div class="as-body' + hl(0) + hl(1) + hl(2) + hl(3) + hl(4) + hl(5) + hl(6) + hl(7) + hl(8) + '">' +
-      '<div class="as-row' + hl(0) + hl(1) + '" id="hl-0">' +
-        '<div class="as-half' + hl(0) + '" id="hl-0"><span class="as-label">高考分数</span><input class="input input-sm" type="number" value="' + escHtml(d.score) + '" readonly="readonly" style="color:var(--text)"/></div>' +
-        '<div class="as-half' + hl(1) + '" id="hl-1"><span class="as-label">全省排名' + rankHint + '</span><input class="input input-sm" type="number" value="' + escHtml(d.rank) + '" readonly="readonly" style="color:var(--text)"/></div>' +
+  if (stepIdx <= 8) {
+    body = '<div class="as-body">' +
+      '<div class="as-row">' +
+        '<div class="as-half' + hl(0) + '"><span class="as-label">高考分数</span><input class="input input-sm" type="number" value="' + escHtml(d.score) + '" readonly="readonly" style="color:var(--text)"/></div>' +
+        '<div class="as-half' + hl(1) + '"><span class="as-label">全省排名' + rankHint + '</span><input class="input input-sm" type="number" value="' + escHtml(d.rank) + '" readonly="readonly" style="color:var(--text)"/></div>' +
       '</div>' +
-      '<div class="as-row' + hl(2) + hl(3) + '" id="hl-2">' +
-        '<div class="as-half' + hl(2) + '" id="hl-2"><span class="as-label">选科要求</span><div class="picker picker-sm"><span class="placeholder-text">' + escHtml(d.sr) + '</span></div></div>' +
-        '<div class="as-half' + hl(3) + '" id="hl-3"><span class="as-label">地区偏好</span><div class="picker picker-sm"><span>' + escHtml(d.region) + '</span></div></div>' +
+      '<div class="as-row">' +
+        '<div class="as-half' + hl(2) + '"><span class="as-label">选科要求</span><div class="picker picker-sm"><span class="placeholder-text">' + escHtml(d.sr) + '</span></div></div>' +
+        '<div class="as-half' + hl(3) + '"><span class="as-label">地区偏好</span><div class="picker picker-sm"><span>' + escHtml(d.region) + '</span></div></div>' +
       '</div>' +
-      '<div class="as-row' + hl(4) + hl(5) + '" id="hl-4">' +
-        '<div class="as-half' + hl(4) + '" id="hl-4"><span class="as-label">专业意向</span><input class="input input-sm" placeholder="' + escHtml(d.keyword) + '" value="' + escHtml(d.keyword) + '" readonly="readonly" style="color:var(--text)"/></div>' +
-        '<div class="as-half' + hl(5) + '" id="hl-5"><span class="as-label">批次选择</span><div class="picker picker-sm"><span class="placeholder-text">' + escHtml(d.batch) + '</span></div></div>' +
+      '<div class="as-row">' +
+        '<div class="as-half' + hl(4) + '"><span class="as-label">专业意向</span><input class="input input-sm" placeholder="' + escHtml(d.keyword) + '" value="' + escHtml(d.keyword) + '" readonly="readonly" style="color:var(--text)"/></div>' +
+        '<div class="as-half' + hl(5) + '"><span class="as-label">批次选择</span><div class="picker picker-sm"><span class="placeholder-text">' + escHtml(d.batch) + '</span></div></div>' +
       '</div>' +
-      '<div class="as-row as-row-algo-adjust' + hl(6) + hl(7) + '" id="hl-6">' +
-        '<div class="as-algo-picker-section' + hl(6) + '" id="hl-6"><span class="as-label">推荐算法</span><div class="picker picker-sm"><span>' + escHtml(d.algo) + '</span></div></div>' +
-        '<div class="toggle-item algo-toggle' + hl(7) + '" id="hl-7"><div class="toggle-box checked"><span class="toggle-check">✓</span></div><span class="toggle-label">服从调剂（同时显示同专业组其他专业）</span></div>' +
+      '<div class="as-row as-row-algo-adjust">' +
+        '<div class="as-algo-picker-section' + hl(6) + '"><span class="as-label">推荐算法</span><div class="picker picker-sm"><span>' + escHtml(d.algo) + '</span></div></div>' +
+        '<div class="toggle-item algo-toggle' + hl(7) + '"><div class="toggle-box checked"><span class="toggle-check">✓</span></div><span class="toggle-label">服从调剂（同时显示同专业组其他专业）</span></div>' +
       '</div>' +
-      '<div class="as-row' + hl(8) + '" id="hl-8">' +
-        '<div class="as-half" style="display:flex;flex-direction:column;justify-content:flex-end;"><div class="toggle-item"><div class="toggle-box"><span class="toggle-check"></span></div><span class="toggle-label">隐藏中外合作</span></div></div>' +
-        '<div class="as-half" style="display:flex;flex-direction:column;justify-content:flex-end;"><div class="toggle-item"><div class="toggle-box"><span class="toggle-check"></span></div><span class="toggle-label">仅推选985/211</span></div></div>' +
+      '<div class="as-row">' +
+        '<div class="as-half' + hl(8) + '" style="display:flex;flex-direction:column;justify-content:flex-end;"><div class="toggle-item"><div class="toggle-box"><span class="toggle-check"></span></div><span class="toggle-label">隐藏中外合作</span></div></div>' +
+        '<div class="as-half' + hl(8) + '" style="display:flex;flex-direction:column;justify-content:flex-end;"><div class="toggle-item"><div class="toggle-box"><span class="toggle-check"></span></div><span class="toggle-label">仅推选985/211</span></div></div>' +
       '</div>' +
       '<div class="as-action"><button class="btn btn-search" disabled>开始推荐</button></div>' +
     '</div>'
   } else {
-    // 步骤 9：冲稳保结果面板
+    // 结果模式（步骤 9-11）：冲/稳/保 独立高亮列
     body = '<div class="as-results-panel">' +
       '<div class="as-header-simple"><span>📋 志愿填报辅助 — 推荐结果</span></div>' +
-      '<div class="as-columns' + hl(9) + '" id="hl-9">' +
-        '<div class="as-col reach"><div class="as-col-header"><span class="as-col-tag">冲</span><span class="as-col-num">3 个推荐</span></div>' +
-          '<div class="as-col-card" style="opacity:0.6"><div class="card-header"><span class="card-name">首冲大学</span><span class="card-code">2801</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">7200</span></div></div></div>' +
-          '<div class="as-col-card" style="opacity:0.35"><div class="card-header"><span class="card-name">冲刺学院</span><span class="card-code">3601</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">7500</span></div></div></div>' +
+      '<div class="as-columns">' +
+        '<div class="as-col reach' + hl(9) + '">' +
+          '<div class="as-col-header"><span class="as-col-tag">冲</span><span class="as-col-num">3 个推荐</span></div>' +
+          '<div class="as-col-card"><div class="card-header"><span class="card-name">首冲大学</span><span class="card-code">2801</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">7200</span></div></div></div>' +
+          '<div class="as-col-card as-col-card-dimm"><div class="card-header"><span class="card-name">冲刺学院</span><span class="card-code">3601</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">7500</span></div></div></div>' +
         '</div>' +
-        '<div class="as-col safe"><div class="as-col-header"><span class="as-col-tag">稳</span><span class="as-col-num">5 个推荐</span></div>' +
-          '<div class="as-col-card" style="opacity:0.8"><div class="card-header"><span class="card-name">稳妥大学</span><span class="card-code">4801</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">8900</span></div></div></div>' +
-          '<div class="as-col-card" style="opacity:0.5"><div class="card-header"><span class="card-name">安全学院</span><span class="card-code">6201</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">9500</span></div></div></div>' +
+        '<div class="as-col safe' + hl(10) + '">' +
+          '<div class="as-col-header"><span class="as-col-tag">稳</span><span class="as-col-num">5 个推荐</span></div>' +
+          '<div class="as-col-card"><div class="card-header"><span class="card-name">稳妥大学</span><span class="card-code">4801</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">8900</span></div></div></div>' +
+          '<div class="as-col-card as-col-card-dimm"><div class="card-header"><span class="card-name">安全学院</span><span class="card-code">6201</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">9500</span></div></div></div>' +
         '</div>' +
-        '<div class="as-col fallback"><div class="as-col-header"><span class="as-col-tag">保</span><span class="as-col-num">4 个推荐</span></div>' +
-          '<div class="as-col-card" style="opacity:0.9"><div class="card-header"><span class="card-name">保底大学</span><span class="card-code">8201</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">12000</span></div></div></div>' +
-          '<div class="as-col-card" style="opacity:0.6"><div class="card-header"><span class="card-name">保底学院</span><span class="card-code">8801</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">15000</span></div></div></div>' +
+        '<div class="as-col fallback' + hl(11) + '">' +
+          '<div class="as-col-header"><span class="as-col-tag">保</span><span class="as-col-num">4 个推荐</span></div>' +
+          '<div class="as-col-card"><div class="card-header"><span class="card-name">保底大学</span><span class="card-code">8201</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">12000</span></div></div></div>' +
+          '<div class="as-col-card as-col-card-dimm"><div class="card-header"><span class="card-name">保底学院</span><span class="card-code">8801</span></div><div class="card-body"><div class="card-row"><span class="card-label">2025最低排名</span><span class="card-value highlight">15000</span></div></div></div>' +
         '</div>' +
       '</div>' +
     '</div>'
