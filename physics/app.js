@@ -1477,9 +1477,32 @@ const TUTORIAL = {
       remark: '不招单色不能识别的考生。',
     },
   },
+  assistant: {
+    steps: [
+      { title: '高考分数', desc: '输入你的高考总分。系统根据分数自动匹配合适的院校范围。此处示范填写 620 分，代表总分 620 分的考生。' },
+      { title: '全省排名', desc: '你的高考全省排名。比分数更能精准反映录取位置。如果你只填了分数未填排名，点击「志愿推荐」后系统会自动从 2026 年一分一段表换算对应排名。' },
+      { title: '选科要求', desc: '选择你的高考选科组合（如「物化生」）。系统会在推荐时优先匹配选科符合的专业组，同时也会宽松匹配选科相符但不完全一致的专业组，扩大选择范围。' },
+      { title: '地区偏好', desc: '按院校所在地筛选，支持按省份或按区域（如「长三角」「珠三角」「本省」）选择。不选则推荐全国所有院校。' },
+      { title: '专业意向', desc: '输入你感兴趣的专业关键词（如「计算机 医学」），用空格分隔多个关键词。系统会搜索专业名称中包含这些关键词的专业组进行推荐。' },
+      { title: '批次选择', desc: '限定推荐结果在某个录取批次范围内。不选则包含所有批次，建议根据你的成绩批次定位缩小范围。' },
+      { title: '推荐算法', desc: '选择排名参考策略。「默认」优先使用 2026 预估排名，若无则参考历史平均排名，适合希望了解所有可选机会的考生。「按最低/平均/最高」仅使用 2024–2025 历史数据进行激进/中性/保守判断，不会推荐无历史数据的新增专业。「仅2024/仅2025」完全参照单年数据。' },
+      { title: '服从调剂', desc: '开启后，每个被推荐的专业组下方会展开同组内的其他专业，方便你了解该专业组还有哪些专业可选，在一组内找平衡。' },
+      { title: '筛选开关', desc: '「隐藏中外合作」过滤掉学费较高的中外合作办学项目；「仅推选985/211」将推荐范围限制在 985/211 重点院校。两个开关可同时开启。' },
+      { title: '冲稳保结果', desc: '推荐结果按「冲」「稳」「保」三栏排列。冲—录取排名高于你的排名的院校（需争取）；稳—录取排名与你相当的院校（较稳妥）；保—录取排名低于你的排名的院校（保底选择）。点击卡片可查看详情，上下滑动浏览所有推荐。' },
+    ],
+    demo: {
+      score: '620',
+      rank: '8000',
+      sr: '物化生',
+      region: '全部省份',
+      keyword: '计算机 医学',
+      batch: '全部批次',
+      algo: '默认（可推荐新专业）',
+    },
+  },
 }
 
-const MODE_CYCLE = ['merged', 'single2025', 'single2026']
+const MODE_CYCLE = ['merged', 'single2025', 'single2026', 'assistant']
 
 function openTutorial(fromHelp) {
   state.tutorialMode = 'merged'
@@ -1517,7 +1540,7 @@ function tutorialNext() {
     state.tutorialRemarkExpanded = isRemarkStep
     renderTutorial()
   } else {
-    if (state.tutorialMode === 'single2026') {
+    if (state.tutorialMode === 'single2026' || state.tutorialMode === 'assistant') {
       finishTutorial()
     } else {
       const curIdx = MODE_CYCLE.indexOf(state.tutorialMode)
@@ -1592,7 +1615,7 @@ function renderTutorial() {
   }
   const isLast = stepIdx === steps.length - 1
   if (isLast) {
-    if (state.tutorialMode === 'single2026') {
+    if (state.tutorialMode === 'single2026' || state.tutorialMode === 'assistant') {
       DOM.btnNext.textContent = '完成'
     } else {
       DOM.btnNext.textContent = '下一模式 →'
@@ -1615,6 +1638,8 @@ function renderTutorialCard(demo, mode, stepIdx) {
     return renderTutorialMerged(demo, stepIdx)
   } else if (mode === 'single2025') {
     return renderTutorialSingle2025(demo, stepIdx)
+  } else if (mode === 'assistant') {
+    return renderTutorialAssistant(demo, stepIdx)
   } else {
     return renderTutorialSingle2026(demo, stepIdx)
   }
@@ -1688,6 +1713,41 @@ function renderTutorialSingle2026(d, stepIdx) {
       '<div class="card-row' + (stepIdx === 9 ? ' row-current' : '') + '" id="hl-9"><span class="card-label">收费标准</span><span class="card-value">' + d.fee + '元/年</span></div>' +
       (d.remark ? '<div class="card-row card-remark-header ' + (stepIdx === 10 ? ' row-current' : '') + '" id="hl-10" onclick="toggleDemoRemark()"><span class="card-label">备注</span><span class="card-remark-toggle">' + (state.tutorialRemarkExpanded ? '收起<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>' : '展开▼') + '</span></div>' : '') +
       (state.tutorialRemarkExpanded && d.remark ? '<div class="card-row card-remark-body' + (stepIdx === 10 ? ' row-current' : '') + '"><span class="card-value full">' + escHtml(d.remark) + '</span></div>' : '') +
+    '</div></div>'
+}
+
+function renderTutorialAssistant(d, stepIdx) {
+  var hl = function (s) { return (stepIdx === s ? ' row-current' : '') }
+  return '<div class="demo-card">' +
+    '<div class="as-demo-panel">' +
+      '<div class="as-demo-section">' +
+        '<div class="as-demo-label">⚙️ 志愿填报辅助</div>' +
+        '<div class="as-demo-row' + hl(0) + '" id="hl-0"><span class="as-demo-field">高考分数</span><span class="as-demo-val">' + escHtml(d.score) + ' 分</span></div>' +
+        '<div class="as-demo-row' + hl(1) + '" id="hl-1"><span class="as-demo-field">全省排名</span><span class="as-demo-val">' + escHtml(d.rank) + ' 名<span class="as-demo-hint">（自动换算）</span></span></div>' +
+        '<div class="as-demo-row' + hl(2) + '" id="hl-2"><span class="as-demo-field">选科要求</span><span class="as-demo-val tag">' + escHtml(d.sr) + '</span></div>' +
+        '<div class="as-demo-row' + hl(3) + '" id="hl-3"><span class="as-demo-field">地区偏好</span><span class="as-demo-val">' + escHtml(d.region) + '</span></div>' +
+        '<div class="as-demo-row' + hl(4) + '" id="hl-4"><span class="as-demo-field">专业意向</span><span class="as-demo-val">' + escHtml(d.keyword) + '</span></div>' +
+        '<div class="as-demo-row' + hl(5) + '" id="hl-5"><span class="as-demo-field">批次选择</span><span class="as-demo-val">' + escHtml(d.batch) + '</span></div>' +
+        '<div class="as-demo-row' + hl(5) + '"><span class="as-demo-field">推荐算法</span><span class="as-demo-val">' + escHtml(d.algo) + '</span></div>' +
+      '</div>' +
+      '<div class="as-demo-section">' +
+        '<div class="as-demo-options' + hl(6) + '" id="hl-6">' +
+          '推荐算法策略选择，5 种算法调整录取门槛参考方式' +
+        '</div>' +
+        '<div class="as-demo-options' + hl(7) + '" id="hl-7">' +
+          '<span class="toggle-demo on">☐ 服从调剂</span> — 展示同专业组其他专业' +
+        '</div>' +
+        '<div class="as-demo-options' + hl(8) + '" id="hl-8">' +
+          '<span class="toggle-demo">☐ 隐藏中外合作</span> <span class="toggle-demo">☐ 仅推选985/211</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="as-demo-section">' +
+        '<div class="as-demo-tiers' + hl(9) + '" id="hl-9">' +
+          '<div class="as-demo-tier reach"><div class="as-demo-tier-label">冲</div><div class="as-demo-tier-desc">排名高于你，需争取</div></div>' +
+          '<div class="as-demo-tier safe"><div class="as-demo-tier-label">稳</div><div class="as-demo-tier-desc">排名与你相当</div></div>' +
+          '<div class="as-demo-tier fallback"><div class="as-demo-tier-label">保</div><div class="as-demo-tier-desc">排名低于你，保底</div></div>' +
+        '</div>' +
+      '</div>' +
     '</div></div>'
 }
 
