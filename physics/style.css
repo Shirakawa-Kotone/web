@@ -130,6 +130,15 @@ input, button, textarea {
   height: 100vh;
 }
 
+/* 右侧结果区 — 始终作为 flex 容器，确保结果列表在竖屏下也能正确滚动加载 */
+.right-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
 /* ============================================================
    Filter Bar
    ============================================================ */
