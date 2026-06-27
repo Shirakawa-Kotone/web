@@ -523,13 +523,25 @@ function doSearch() {
     }
 
     results.sort((a, b) => {
-      const hasScoreA = !!(a.a || a.b)
-      const hasScoreB = !!(b.a || b.b)
-      if (hasScoreA && !hasScoreB) return -1
-      if (!hasScoreA && hasScoreB) return 1
-      const sa = Number((a.b || a.a || a.d || {}).s || 0)
-      const sb = Number((b.b || b.a || b.d || {}).s || 0)
-      return (ms || mr) ? sa - sb : sb - sa
+      const getRefRank = function(item) {
+        // 两年平均排名（2024+2025），仅有一年则用单年
+        if (item.a && item.b) return (Number(item.a.r) + Number(item.b.r)) / 2
+        if (item.a) return Number(item.a.r)
+        if (item.b) return Number(item.b.r)
+        if (item.d) return Number(item.d.r)
+        return 0
+      }
+      const hasRankA = !!(a.a || a.b)
+      const hasRankB = !!(b.a || b.b)
+      if (hasRankA && !hasRankB) return -1
+      if (!hasRankA && hasRankB) return 1
+      const ra = getRefRank(a)
+      const rb = getRefRank(b)
+      if (!ra && !rb) return 0
+      if (!ra) return 1
+      if (!rb) return -1
+      // 排名越低越好：无筛选时最优排名靠前，有筛选时边界排名靠前
+      return (ms || mr) ? rb - ra : ra - rb
     })
 
     state.searchCache = results
@@ -561,9 +573,9 @@ function doSearch() {
       result.push(r)
     }
     if (ms || mr) {
-      result.sort((a, b) => a[6] - b[6])
+      result.sort((a, b) => b[7] - a[7])
     } else {
-      result.sort((a, b) => b[6] - a[6])
+      result.sort((a, b) => a[7] - b[7])
     }
     state.searchCache = result
     state.searchIsGrouped = false
