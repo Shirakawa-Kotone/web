@@ -1933,3 +1933,305 @@ input[type="number"] {
 .dark-mode .as-rank-hint {
   color: #ffd700;
 }
+
+/* ============================================================
+   志愿填报辅助 — 横屏宽卡片布局（≥1200px）
+   ============================================================ */
+.as-wide {
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.as-wide-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.as-wide-bar {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+}
+
+.as-wide-batch-bar {
+  display: flex;
+  gap: 2px;
+  padding: 6px 10px 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.as-wide-batch-tab {
+  flex-shrink: 0;
+  padding: 5px 14px;
+  font-size: 12px;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  border-bottom: none;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+.as-wide-batch-tab:hover {
+  color: var(--text);
+  background: var(--bg);
+}
+.as-wide-batch-tab.active {
+  color: var(--primary);
+  font-weight: bold;
+  background: var(--bg);
+  border-color: var(--border);
+}
+
+.as-wide-tier-bar {
+  display: flex;
+  gap: 4px;
+  padding: 4px 10px 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.as-wide-tier-tab {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  user-select: none;
+  transition: all 0.15s ease;
+}
+.as-wide-tier-tab:hover {
+  color: var(--text);
+  background: var(--bg);
+}
+.as-wide-tier-tab.active {
+  font-weight: bold;
+  color: #fff;
+  border-color: transparent;
+}
+
+.as-wide-tier-tab:first-child.active { background: #1565C0; }
+.as-wide-tier-tab:nth-child(2).active { background: #00897B; }
+.as-wide-tier-tab:nth-child(3).active { background: #757575; }
+
+.as-wide-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.as-wide-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.as-wide-card-冲 { border-left: 4px solid #1565C0; }
+.as-wide-card-稳 { border-left: 4px solid #00897B; }
+.as-wide-card-保 { border-left: 4px solid #757575; }
+
+.as-wide-row1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.as-wide-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  flex-shrink: 0;
+}
+.as-wide-badge-冲 { background: #1565C0; }
+.as-wide-badge-稳 { background: #00897B; }
+.as-wide-badge-保 { background: #757575; }
+
+.as-wide-sname {
+  font-weight: bold;
+  font-size: 13px;
+  color: var(--text);
+  flex-shrink: 0;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.as-wide-scode {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.as-wide-stags {
+  display: inline-flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.as-wide-stags .school-tag,
+.as-wide-stags .school-rank {
+  font-size: 10px;
+  padding: 1px 5px;
+}
+
+.as-wide-gc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--primary-light);
+  padding: 1px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.as-wide-link {
+  font-size: 11px;
+  color: var(--primary);
+  text-decoration: none;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.as-wide-link:hover {
+  text-decoration: underline;
+}
+
+.as-wide-table {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 12px;
+  font-size: 11px;
+}
+
+.as-wide-tr {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.as-wide-tr:last-child {
+  border-bottom: none;
+}
+
+.as-wide-th {
+  font-weight: bold;
+  color: var(--text-muted);
+  font-size: 10px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 4px;
+  margin-bottom: 2px;
+}
+
+.as-wide-tr-matched {
+  background: var(--primary-light);
+  margin: 0 -12px;
+  padding: 4px 12px;
+  border-bottom-color: transparent;
+}
+.as-wide-tr-matched + .as-wide-tr {
+  border-top: 1px solid var(--border-light);
+}
+
+.as-wide-td {
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.as-wide-td-num {
+  width: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.as-wide-td-name {
+  flex: 1;
+  min-width: 60px;
+  font-weight: 500;
+}
+
+.as-wide-td-code {
+  width: 36px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.as-wide-td-fee {
+  width: 60px;
+  text-align: right;
+  color: var(--text-secondary);
+}
+
+.as-wide-td-2024,
+.as-wide-td-2025 {
+  width: 80px;
+  text-align: right;
+  font-family: monospace;
+  font-size: 10px;
+}
+
+.as-wide-td-plan {
+  width: 44px;
+  text-align: right;
+  color: var(--text-secondary);
+}
+
+.as-wide-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 12px;
+  border-top: 1px solid var(--border-light);
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.as-wide-fitem {
+  flex-shrink: 0;
+}
+
+.as-wide-fitem-adjust {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.as-wide-fitem-remark {
+  color: var(--text-secondary);
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dark-mode .as-wide-row1 { background: #1e1e1e; }
+.dark-mode .as-wide-tr-matched { background: #1a2e2b; }
+.dark-mode .as-wide-batch-bar { background: #1e1e1e; }
+.dark-mode .as-wide-bar { background: #1e1e1e; border-bottom-color: #333; }
+.dark-mode .as-wide-batch-tab.active { background: #252525; border-color: #333; }
+.dark-mode .as-wide-tier-tab { border-color: #333; }
