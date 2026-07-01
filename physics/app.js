@@ -772,7 +772,7 @@ function renderCardGrouped(item, idx, groupMajorMap) {
     if (diffSection) body.appendChild(diffSection)
   }
 
-  // 服从调剂：同专业组其他专业
+  // 同专业组其他专业（志愿推荐模式下默认展开）
   if (groupMajorMap && item.g) {
     const mapKey = item.n + '\x00' + item.gc
     const cardKey = item.n + '\x00' + item.g
@@ -780,7 +780,7 @@ function renderCardGrouped(item, idx, groupMajorMap) {
     if (majors && majors.length > 1) {
       const others = majors.filter(m => m.n !== item.g)
       if (others.length > 0) {
-        const _isOpen = state.assistantAdjustExpanded[cardKey]
+        const _isOpen = state.assistantAdjustExpanded[cardKey] !== false
         body.appendChild(makeOtherMajorsHeader(cardKey, others, _isOpen))
         if (_isOpen) {
           body.appendChild(makeOtherMajorsBody(others))
@@ -2277,7 +2277,7 @@ function renderAssistantResultsLegacy(results, userScore, userRank) {
   container.appendChild(tabBar)
 
   // Build columns — 使用 DocumentFragment 批量追加，减少回流
-  const adjustMap = state.assistantAdjust ? buildGroupMajorMap() : null
+  const adjustMap = buildGroupMajorMap()
 
   for (const t of tiers) {
     const items = results[t]
