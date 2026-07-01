@@ -2306,12 +2306,21 @@ input[type="number"] {
   color: var(--text-secondary);
 }
 
-/* 窄屏下为专业名腾出更多空间 */
+/* 窄屏下限制专业名列宽，确保专业代号可见 */
 @media (max-width: 860px) {
   .as-wide-td-fee { width: 52px; }
   .as-wide-td-plan { width: 38px; }
   .as-wide-td-2024,
   .as-wide-td-2025 { width: 78px; }
+  .as-wide-td-name {
+    max-width: 110px;
+    display: block;
+    white-space: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .as-wide-td-name::-webkit-scrollbar { display: none; }
 }
 
 /* ── 底部信息行 ── */
