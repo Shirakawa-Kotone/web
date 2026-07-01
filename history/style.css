@@ -2052,6 +2052,11 @@ input[type="number"] {
   padding: 6px 10px 2px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.as-wide-batch-bar::-webkit-scrollbar {
+  display: none;
 }
 
 .as-wide-batch-tab {
@@ -2081,11 +2086,14 @@ input[type="number"] {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 18px;
   min-height: 0;
+}
+@media (min-width: 860px) {
+  .as-wide-body { padding: 20px; }
 }
 
 .as-wide-card {
@@ -2164,6 +2172,13 @@ input[type="number"] {
   flex-direction: column;
   padding: 10px 16px 12px;
   font-size: 13px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  min-width: 0;
+}
+.as-wide-table::-webkit-scrollbar {
+  display: none;
 }
 
 .as-wide-tr {
@@ -2215,6 +2230,13 @@ input[type="number"] {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  white-space: nowrap;
+}
+.as-wide-td-name::-webkit-scrollbar {
+  display: none;
 }
 
 /* 专业级冲稳保标签（横屏卡片表格内） */

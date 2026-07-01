@@ -2182,6 +2182,8 @@ function _execAssistant(score, rank, srCode, regionProvinces, keyword) {
     // Skip sports/coop based on existing filters
     if (state.hideSports && (g.g.indexOf('体育') !== -1 || g.n.indexOf('体育') !== -1)) continue
     if (state.assistantHideCoop && (g.g.indexOf('中外合作') !== -1 || (g.remark && g.remark.indexOf('中外合作') !== -1))) continue
+    // 排除高水平运动队
+    if (g.plan && g.plan.indexOf('高水平运动队') !== -1) continue
 
     // 仅推选 985/211
     if (state.assistantOnly985211 && !getSchoolTag(g.n)) continue
@@ -2218,11 +2220,8 @@ function _execAssistant(score, rank, srCode, regionProvinces, keyword) {
 
 function renderAssistantResults(results, userScore, userRank) {
   // results 始终为 { batchName: [items] } 格式
-  if (window.innerWidth >= 1200) {
-    renderAssistantResultsWide(results, userScore, userRank)
-  } else {
-    renderAssistantResultsLegacy(results, userScore, userRank)
-  }
+  // 统一使用横屏宽卡片格式，窄屏下通过左右滑动查看完整数据
+  renderAssistantResultsWide(results, userScore, userRank)
 }
 
 function renderAssistantResultsLegacy(results, userScore, userRank) {
@@ -2345,6 +2344,11 @@ function renderAssistantResultsWide(results, userScore, userRank) {
 
   const body = document.createElement('div')
   body.className = 'as-wide-body'
+  body.addEventListener('scroll', function () {
+    if (_mobileAssistantActive) {
+      DOM.floatBtn.style.display = this.scrollTop > 300 ? 'flex' : 'none'
+    }
+  })
   renderWideCards(body, results[activeBatch] || [], userScore, userRank, algoVal)
   wrap.appendChild(body)
 
