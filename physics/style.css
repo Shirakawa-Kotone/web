@@ -136,7 +136,9 @@ input, button, textarea {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   overflow: hidden;
+  height: 100%;
 }
 
 /* ============================================================
@@ -807,6 +809,7 @@ input[type="number"] {
   flex-direction: column;
   overflow: hidden;
   min-height: 0;
+  height: 100%;
 }
 
 .as-header-simple {
@@ -852,6 +855,7 @@ input[type="number"] {
   padding: 8px;
   overflow: hidden;
   min-height: 0;
+  height: 100%;
 }
 
 .as-column {
@@ -861,6 +865,7 @@ input[type="number"] {
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+  position: relative;
 }
 
 .as-column-header {
