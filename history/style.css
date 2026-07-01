@@ -2167,18 +2167,20 @@ input[type="number"] {
   text-decoration: underline;
 }
 
-.as-wide-table {
-  display: flex;
-  flex-direction: column;
-  padding: 10px 16px 12px;
-  font-size: 13px;
+.as-wide-table-wrap {
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  min-width: 0;
 }
-.as-wide-table::-webkit-scrollbar {
+.as-wide-table-wrap::-webkit-scrollbar {
   display: none;
+}
+.as-wide-table {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 100%;
+  padding: 10px 16px 12px;
+  font-size: 13px;
 }
 
 .as-wide-tr {
@@ -2187,7 +2189,6 @@ input[type="number"] {
   gap: 6px;
   padding: 8px 0;
   border-bottom: 1px solid var(--border-light);
-  min-width: max-content;
 }
 .as-wide-tr:last-child {
   border-bottom: none;
@@ -2293,6 +2294,14 @@ input[type="number"] {
   width: 44px;
   text-align: right;
   color: var(--text-secondary);
+}
+
+/* 窄屏下为专业名腾出更多空间 */
+@media (max-width: 860px) {
+  .as-wide-td-fee { width: 52px; }
+  .as-wide-td-plan { width: 38px; }
+  .as-wide-td-2024,
+  .as-wide-td-2025 { width: 78px; }
 }
 
 .as-wide-footer {

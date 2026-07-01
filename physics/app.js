@@ -2683,7 +2683,11 @@ function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
     table.appendChild(row)
   }
 
-  card.appendChild(table)
+  // 包裹表格以便水平滚动（行背景随内容扩展）
+  const tableWrap = document.createElement('div')
+  tableWrap.className = 'as-wide-table-wrap'
+  tableWrap.appendChild(table)
+  card.appendChild(tableWrap)
 
   // ── 底部信息行 ──
   const footer = document.createElement('div')
