@@ -2232,13 +2232,6 @@ input[type="number"] {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  white-space: nowrap;
-}
-.as-wide-td-name::-webkit-scrollbar {
-  display: none;
 }
 
 /* 专业级冲稳保标签（横屏卡片表格内） */
@@ -2296,12 +2289,18 @@ input[type="number"] {
   color: var(--text-secondary);
 }
 
-/* 窄屏下适当压缩次要列宽 */
+/* 窄屏下专业名列使用内容宽度，完整显示专业名 */
 @media (max-width: 860px) {
   .as-wide-td-fee { width: 52px; }
   .as-wide-td-plan { width: 38px; }
   .as-wide-td-2024,
   .as-wide-td-2025 { width: 78px; }
+  .as-wide-td-name {
+    flex: none;
+    max-width: none;
+    overflow: visible;
+    white-space: normal;
+  }
 }
 
 .as-wide-footer {
