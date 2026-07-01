@@ -2319,6 +2319,9 @@ function renderAssistantResultsWide(results, userScore, userRank) {
 }
 
 function renderWideCards(container, items, userScore, userRank, algoVal) {
+  // 停止旧的自动滚动
+  const oldInners = container.querySelectorAll('.as-wide-td-name-inner')
+  for (const el of oldInners) el._marqueeActive = false
   container.innerHTML = ''
 
   if (!items.length) {
@@ -2336,6 +2339,59 @@ function renderWideCards(container, items, userScore, userRank, algoVal) {
   }
 
   container.appendChild(frag)
+
+  // 初始化太长专业名的自动滚动
+  initNameMarquee(container)
+}
+
+/**
+ * 太长专业名自动来回滚动 + 鼠标拖拽滚动
+ */
+function initNameMarquee(container) {
+  const inners = container.querySelectorAll('.as-wide-td-name-inner')
+  for (const el of inners) {
+    if (el.scrollWidth > el.clientWidth) {
+      initSingleMarquee(el)
+    }
+  }
+}
+
+function initSingleMarquee(el) {
+  const overflow = el.scrollWidth - el.clientWidth
+  el.style.cursor = 'grab'
+  // 鼠标拖拽
+  el.addEventListener('mousedown', function (e) {
+    e.preventDefault()
+    const startX = e.clientX
+    const startScroll = el.scrollLeft
+    const onMove = function (ev) {
+      el.scrollLeft = startScroll + (startX - ev.clientX)
+    }
+    const onUp = function () {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+      el.style.cursor = 'grab'
+    }
+    el.style.cursor = 'grabbing'
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+  })
+  // 自动来回滚动（悬停暂停）
+  var dir = 1
+  var pos = 0
+  var paused = false
+  el.addEventListener('mouseenter', function () { paused = true })
+  el.addEventListener('mouseleave', function () { paused = false })
+  function tick() {
+    if (!paused) {
+      pos += dir * 0.4
+      if (pos >= overflow || pos <= 0) dir *= -1
+      el.scrollLeft = pos
+    }
+    if (el._marqueeActive) requestAnimationFrame(tick)
+  }
+  el._marqueeActive = true
+  requestAnimationFrame(tick)
 }
 
 function renderCardWide(entry, userScore, userRank, gmi, algoVal) {

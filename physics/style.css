@@ -2170,11 +2170,20 @@ input[type="number"] {
 
 /* 专业级冲稳保标签（横屏卡片表格内） */
 .as-wide-td-name-inner {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   display: block;
   min-width: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+}
+.as-wide-td-name-inner::-webkit-scrollbar {
+  display: none;
+}
+.as-wide-td-name-inner:active {
+  cursor: grabbing;
 }
 
 .as-wide-tier-badge {
