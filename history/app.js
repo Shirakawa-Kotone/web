@@ -705,40 +705,68 @@ function renderCardGrouped(item, idx, groupMajorMap, userScore, userRank, algoVa
   body.appendChild(makeRow('选科', item._sd, 'tag'))
   // Plan type
   if (item.plan) body.appendChild(makeRow('性质', item.plan))
-  // Group name
-  if (item.g) body.appendChild(makeRow('专业名称', item.g, 'full'))
   // Group code
   if (item.gc) body.appendChild(makeRow('专业组代码', item.gc))
 
-  // 2024 row
-  if (item.a) {
-    body.appendChild(makeYearRow('2024',
-      '<span class="card-value highlight">' + item.a.s + '分</span>' +
-      '<span class="card-value highlight">最低排名 ' + item.a.r + '</span>' +
-      '<span class="card-value">录取' + item.a.e + '人</span>'))
-  }
-  // 2025 row
-  if (item.b) {
-    body.appendChild(makeYearRow('2025',
-      '<span class="card-value highlight">' + item.b.s + '分</span>' +
-      '<span class="card-value highlight">最低排名 ' + item.b.r + '</span>' +
-      '<span class="card-value">录取' + item.b.e + '人</span>'))
-  }
-  // 2026 row
-  if (item.d) {
-    // 招生简章链接
-    if (item.d.link) {
-      body.appendChild(makeLinkRow(item.d.link))
+  // 判断是否使用专业表格模式（助理模式下 + 同组有多个专业）
+  var _showMajorTable = false
+  var _allMajorsData = null
+  if (state.assistantAdjust && item.g) {
+    const _mapKey = item.n + '\x00' + item.gc
+    const _md = majorIndex ? majorIndex.get(_mapKey) : null
+    const _mm = groupMajorMap ? groupMajorMap.get(_mapKey) : null
+    if (_md && _md.length > 1) {
+      _allMajorsData = _md.map(function (m) {
+        return { n: m.g, code: m.code, planCount: m.planCount, a: m.a, b: m.b, d: m.d }
+      })
+    } else if (_mm && _mm.length > 1) {
+      _allMajorsData = _mm
+    }
+    if (_allMajorsData && _allMajorsData.length > 1) {
+      _showMajorTable = true
     }
   }
 
-  // Remark
-  if (item.remark) {
-    const isOpen = state.remarkExpanded[idx]
-    body.appendChild(makeRemarkToggle(idx, isOpen))
-    if (isOpen) {
-      body.appendChild(makeRemarkBody(item.remark))
+  // 专业名称（表格模式下不重复显示）
+  if (!_showMajorTable && item.g) body.appendChild(makeRow('专业名称', item.g, 'full'))
+
+  // 2024/2025/2026 数据行（表格模式下由统一表格展示全部专业数据）
+  if (!_showMajorTable) {
+    // 2024 row
+    if (item.a) {
+      body.appendChild(makeYearRow('2024',
+        '<span class="card-value highlight">' + item.a.s + '分</span>' +
+        '<span class="card-value highlight">最低排名 ' + item.a.r + '</span>' +
+        '<span class="card-value">录取' + item.a.e + '人</span>'))
     }
+    // 2025 row
+    if (item.b) {
+      body.appendChild(makeYearRow('2025',
+        '<span class="card-value highlight">' + item.b.s + '分</span>' +
+        '<span class="card-value highlight">最低排名 ' + item.b.r + '</span>' +
+        '<span class="card-value">录取' + item.b.e + '人</span>'))
+    }
+    // 2026 row
+    if (item.d) {
+      // 招生简章链接
+      if (item.d.link) {
+        body.appendChild(makeLinkRow(item.d.link))
+      }
+    }
+
+    // Remark（表格模式下也显示，因匹配专业的备注与同组其他专业无关）
+    if (!_showMajorTable && item.remark) {
+      const isOpen = state.remarkExpanded[idx]
+      body.appendChild(makeRemarkToggle(idx, isOpen))
+      if (isOpen) {
+        body.appendChild(makeRemarkBody(item.remark))
+      }
+    }
+  }
+
+  // Remark in major table mode: show a concise row
+  if (_showMajorTable && item.remark) {
+    body.appendChild(makeRow('备注', item.remark))
   }
 
   // Diffs
@@ -747,37 +775,30 @@ function renderCardGrouped(item, idx, groupMajorMap, userScore, userRank, algoVa
     if (diffSection) body.appendChild(diffSection)
   }
 
-  // 同专业组其他专业（仅勾选服从调剂时显示）
-  // 优先使用 majorIndex（含完整录取数据），其次 groupMajorMap（仅原始数据）
-  if (state.assistantAdjust && item.g) {
-    const mapKey = item.n + '\x00' + item.gc
-
-    // 尝试从 majorIndex 获取（使用 g 字段作名称）
-    let majors = null
-    const md = majorIndex ? majorIndex.get(mapKey) : null
-    const mm = groupMajorMap ? groupMajorMap.get(mapKey) : null
-
-    if (md && md.length > 1) {
-      // majorIndex 有多个专业 → 转换字段名（g→n）并使用
-      majors = md.map(function (m) {
-        return { n: m.g, code: m.code, planCount: m.planCount, a: m.a, b: m.b, d: m.d }
-      })
-    } else if (mm && mm.length > 1) {
-      majors = mm
+  // 同专业组专业表格（助理模式 + 同组有多个专业）
+  if (_showMajorTable && _allMajorsData) {
+    // 构建完整列表：匹配专业排第一，其余按原顺序
+    const matchedMajor = {
+      n: item.g,
+      code: item.d && item.d.code ? item.d.code : '',
+      fee: item.fee,
+      planCount: item.d ? item.d.e : 0,
+      a: item.a,
+      b: item.b,
+      d: item.d,
+      isMatched: true,
+    }
+    const displayList = [matchedMajor]
+    for (const _m of _allMajorsData) {
+      if (_m.n !== item.g) displayList.push({..._m, isMatched: false})
     }
 
-    if (majors && majors.length > 1) {
-      const others = majors.filter(function (m) { return m.n !== item.g })
-      if (others.length > 0) {
-        // 始终展开显示，不可折叠（勾选服从调剂即表示查看全部专业）
-        const label = document.createElement('div')
-        label.className = 'card-row card-remark-header'
-        label.style.cursor = 'default'
-        label.innerHTML = '<span class="card-label">同专业组其他专业</span>'
-        body.appendChild(label)
-        body.appendChild(makeOtherMajorsBody(others, userScore, userRank, algoVal))
-      }
-    }
+    const label = document.createElement('div')
+    label.className = 'card-row card-remark-header'
+    label.style.cursor = 'default'
+    label.innerHTML = '<span class="card-label">同专业组专业</span>'
+    body.appendChild(label)
+    body.appendChild(makeMajorTable(displayList, userScore, userRank, algoVal))
   }
 
   card.appendChild(body)
@@ -797,39 +818,62 @@ function makeOtherMajorsHeader(mapKey, others, isOpen) {
   return wrapper
 }
 
-function makeOtherMajorsBody(others, userScore, userRank, algoVal) {
-  const list = document.createElement('div')
-  list.className = 'card-row card-remark-body'
-  const listInner = document.createElement('div')
-  listInner.className = 'adjust-majors-list'
-  for (const m of others) {
-    const item = document.createElement('span')
-    item.className = 'adjust-major-item'
-    // 计算专业级冲稳保（优先使用专业自身 a/b/d 数据）
+function makeMajorTable(majors, userScore, userRank, algoVal) {
+  const container = document.createElement('div')
+  container.className = 'as-pt-table'
+
+  for (let i = 0; i < majors.length; i++) {
+    const m = majors[i]
+    const row = document.createElement('div')
+    row.className = 'as-pt-tr' +
+      (m.isMatched ? ' as-pt-tr-matched' : '') +
+      (i < 6 ? ' as-pt-tr-top6' : '')
+
+    // 序号
+    var html = '<span class="as-pt-td as-pt-td-num">' + (i + 1) + '</span>'
+
+    // 专业级冲稳保
     var tierHtml = ''
     if ((userScore || userRank) && algoVal && (m.a || m.b || m.d)) {
-      var majorTier = calculateMajorTier(userScore, userRank, m, algoVal)
-      if (majorTier) {
-        tierHtml = ' <span class="adjust-major-tier as-major-tier-' + majorTier + '">' + majorTier + '</span>'
-      }
+      var _t = calculateMajorTier(userScore, userRank, m, algoVal)
+      if (_t) tierHtml = '<span class="adjust-major-tier as-major-tier-' + _t + '">' + _t + '</span> '
     }
-    // 年份数据
-    var yearParts = []
-    if (m.a) {
-      yearParts.push('2024:' + (m.a.s || '—') + '/' + (m.a.r || '—'))
+
+    // 专业名称 + 代号
+    html += '<span class="as-pt-td as-pt-td-name">' + tierHtml + escHtml(m.n) + '</span>'
+    html += '<span class="as-pt-td as-pt-td-code">' + (m.code ? escHtml(m.code) : '—') + '</span>'
+
+    // 2024 数据
+    var y2024 = ''
+    if (m.a && m.a.s && m.a.r) {
+      y2024 = m.a.s + '/' + m.a.r
+    } else if (m.a && m.a.s) {
+      y2024 = m.a.s + '分'
+    } else if (m.a && m.a.r) {
+      y2024 = '排' + m.a.r
+    } else {
+      y2024 = '—'
     }
-    if (m.b) {
-      yearParts.push('2025:' + (m.b.s || '—') + '/' + (m.b.r || '—'))
+    html += '<span class="as-pt-td as-pt-td-2024">' + y2024 + '</span>'
+
+    // 2025 数据
+    var y2025 = ''
+    if (m.b && m.b.s && m.b.r) {
+      y2025 = m.b.s + '/' + m.b.r
+    } else if (m.b && m.b.s) {
+      y2025 = m.b.s + '分'
+    } else if (m.b && m.b.r) {
+      y2025 = '排' + m.b.r
+    } else {
+      y2025 = '—'
     }
-    var yearStr = yearParts.length ? ' <span class="major-detail">' + yearParts.join(' ') + '</span>' : ''
-    item.innerHTML = '· ' + tierHtml + '<span class="major-name">' + escHtml(m.n) + '</span>' +
-      (m.code ? ' <span class="major-detail">(代号' + escHtml(m.code) + ')</span>' : '') +
-      (m.planCount ? ' <span class="major-detail">计划' + m.planCount + '人</span>' : '') +
-      yearStr
-    listInner.appendChild(item)
+    html += '<span class="as-pt-td as-pt-td-2025">' + y2025 + '</span>'
+
+    row.innerHTML = html
+    container.appendChild(row)
   }
-  list.appendChild(listInner)
-  return list
+
+  return container
 }
 
 function toggleAdjustExpand(mapKey) {
@@ -2319,9 +2363,6 @@ function renderAssistantResultsWide(results, userScore, userRank) {
 }
 
 function renderWideCards(container, items, userScore, userRank, algoVal) {
-  // 停止旧的自动滚动
-  const oldInners = container.querySelectorAll('.as-wide-td-name-inner')
-  for (const el of oldInners) el._marqueeActive = false
   container.innerHTML = ''
 
   if (!items.length) {
@@ -2339,59 +2380,6 @@ function renderWideCards(container, items, userScore, userRank, algoVal) {
   }
 
   container.appendChild(frag)
-
-  // 初始化太长专业名的自动滚动
-  initNameMarquee(container)
-}
-
-/**
- * 太长专业名自动来回滚动 + 鼠标拖拽滚动
- */
-function initNameMarquee(container) {
-  const inners = container.querySelectorAll('.as-wide-td-name-inner')
-  for (const el of inners) {
-    if (el.scrollWidth > el.clientWidth) {
-      initSingleMarquee(el)
-    }
-  }
-}
-
-function initSingleMarquee(el) {
-  const overflow = el.scrollWidth - el.clientWidth
-  el.style.cursor = 'grab'
-  // 鼠标拖拽
-  el.addEventListener('mousedown', function (e) {
-    e.preventDefault()
-    const startX = e.clientX
-    const startScroll = el.scrollLeft
-    const onMove = function (ev) {
-      el.scrollLeft = startScroll + (startX - ev.clientX)
-    }
-    const onUp = function () {
-      document.removeEventListener('mousemove', onMove)
-      document.removeEventListener('mouseup', onUp)
-      el.style.cursor = 'grab'
-    }
-    el.style.cursor = 'grabbing'
-    document.addEventListener('mousemove', onMove)
-    document.addEventListener('mouseup', onUp)
-  })
-  // 自动来回滚动（悬停暂停）
-  var dir = 1
-  var pos = 0
-  var paused = false
-  el.addEventListener('mouseenter', function () { paused = true })
-  el.addEventListener('mouseleave', function () { paused = false })
-  function tick() {
-    if (!paused) {
-      pos += dir * 0.4
-      if (pos >= overflow || pos <= 0) dir *= -1
-      el.scrollLeft = pos
-    }
-    if (el._marqueeActive) requestAnimationFrame(tick)
-  }
-  el._marqueeActive = true
-  requestAnimationFrame(tick)
 }
 
 function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
@@ -2543,7 +2531,7 @@ function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
     var newTagHtml = (m.d && !m.a && !m.b) ? '<span class="as-wide-tag-new">新</span>' : ''
     row.innerHTML =
       '<span class="as-wide-td as-wide-td-num">' + (mi + 1) + '</span>' +
-      '<span class="as-wide-td as-wide-td-name">' + majorTierHtml + newTagHtml + '<span class="as-wide-td-name-inner">' + escHtml(m.g) + '</span></span>' +
+      '<span class="as-wide-td as-wide-td-name">' + majorTierHtml + newTagHtml + escHtml(m.g) + '</span>' +
       '<span class="as-wide-td as-wide-td-code">' + escHtml(m.code || '—') + '</span>' +
       '<span class="as-wide-td as-wide-td-fee">' + feeStr + '</span>' +
       '<span class="as-wide-td as-wide-td-2024">' + y2024 + '</span>' +

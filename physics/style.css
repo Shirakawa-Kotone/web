@@ -1143,6 +1143,65 @@ input[type="number"] {
   margin: 0 2px;
 }
 
+/* 竖屏卡片内专业表格（同组全部专业） */
+.as-pt-table {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 2px;
+}
+.as-pt-tr {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 12px;
+}
+.as-pt-tr:last-child {
+  border-bottom: none;
+}
+.as-pt-tr-matched {
+  background: var(--primary-light);
+  border-bottom-color: transparent;
+}
+.as-pt-tr-top6 {
+  background: var(--primary-light);
+}
+.as-pt-td {
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.as-pt-td-num {
+  width: 18px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.as-pt-td-name {
+  flex: 1;
+  min-width: 50px;
+  font-weight: 500;
+}
+.as-pt-td-code {
+  width: 36px;
+  color: var(--text-muted);
+  font-size: 10px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.as-pt-td-2024,
+.as-pt-td-2025 {
+  width: 68px;
+  text-align: right;
+  color: var(--text-secondary);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
 /* Year diff section */
 .diff-section {
   margin-top: 8px;
@@ -2169,23 +2228,6 @@ input[type="number"] {
 }
 
 /* 专业级冲稳保标签（横屏卡片表格内） */
-.as-wide-td-name-inner {
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  display: block;
-  min-width: 0;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  cursor: grab;
-}
-.as-wide-td-name-inner::-webkit-scrollbar {
-  display: none;
-}
-.as-wide-td-name-inner:active {
-  cursor: grabbing;
-}
-
 .as-wide-tier-badge {
   display: inline-block;
   font-size: 9px;
@@ -2267,6 +2309,8 @@ input[type="number"] {
 /* ── 暗色模式 ── */
 .dark-mode .as-wide-row1 { background: #1e1e1e; }
 .dark-mode .as-wide-tr-matched { background: #1a2e2b; }
+.dark-mode .as-pt-tr-matched { background: #1a2e2b; }
+.dark-mode .as-pt-tr-top6 { background: #1a2e2b; }
 .dark-mode .as-wide-batch-bar { background: #1e1e1e; }
 .dark-mode .as-wide-bar { background: #1e1e1e; border-bottom-color: #333; }
 .dark-mode .as-wide-batch-tab.active { background: #252525; border-color: #333; }
