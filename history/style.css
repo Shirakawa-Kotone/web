@@ -2159,6 +2159,14 @@ input[type="number"] {
 }
 
 /* 专业级冲稳保标签（横屏卡片表格内） */
+.as-wide-td-name-inner {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  min-width: 0;
+}
+
 .as-wide-tier-badge {
   display: inline-block;
   font-size: 9px;
