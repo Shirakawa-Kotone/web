@@ -2001,6 +2001,9 @@ function getRefScore(group, algorithm) {
 function calculateTier(userScore, userRank, group, algorithm) {
   algorithm = algorithm || 'default'
 
+  // 排名范围熔断：±5000名(最大) 或 ±50%排名 或 至少±500名(最小)
+  const rankFuse = userRank ? Math.max(500, Math.min(5000, Math.round(userRank * 0.5))) : null
+
   // ── 默认模式（可推荐"新"专业）─────────────────────────────
   if (algorithm === 'default') {
     // Priority 1: 2026 estimated rank, with deviation check
@@ -2014,6 +2017,8 @@ function calculateTier(userScore, userRank, group, algorithm) {
       }
       if (deviationOk) {
         const ratio = group.d.r / userRank
+        // 排名熔断：过远排名不再推荐
+        if (Math.abs(group.d.r - userRank) > rankFuse) return null
         if (ratio < 0.92) return '冲'
         if (ratio <= 1.08) return '稳'
         // 保双重熔断：分数 > userScore-15 且 排名 ≤ max(userRank×130%, userRank+3000)
@@ -2034,6 +2039,8 @@ function calculateTier(userScore, userRank, group, algorithm) {
       if (group.b && group.b.r) ranks.push(group.b.r)
       if (ranks.length > 0) {
         const avgRank = ranks.reduce((a, b) => a + b, 0) / ranks.length
+        // 排名熔断：过远排名不再推荐
+        if (Math.abs(avgRank - userRank) > rankFuse) return null
         const ratio = avgRank / userRank
         if (ratio < 0.92) return '冲'
         if (ratio <= 1.08) return '稳'
@@ -2078,6 +2085,8 @@ function calculateTier(userScore, userRank, group, algorithm) {
   }
 
   if (userRank && refRank !== null) {
+    // 排名熔断：过远排名不再推荐
+    if (Math.abs(refRank - userRank) > rankFuse) return null
     const ratio = refRank / userRank
     if (ratio < 0.92) return '冲'
     if (ratio <= 1.08) return '稳'
