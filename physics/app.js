@@ -772,9 +772,9 @@ function renderCardGrouped(item, idx, groupMajorMap, userScore, userRank, algoVa
     if (diffSection) body.appendChild(diffSection)
   }
 
-  // 同专业组其他专业（志愿推荐模式下默认展开）
+  // 同专业组其他专业（仅勾选服从调剂时显示）
   // 优先使用 majorIndex（含完整录取数据），其次 groupMajorMap（仅原始数据）
-  if (item.g) {
+  if (state.assistantAdjust && item.g) {
     const mapKey = item.n + '\x00' + item.gc
     const cardKey = item.n + '\x00' + item.g
 
@@ -2582,6 +2582,39 @@ function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
 
   card.appendChild(table)
 
+  // ── 服从调剂：显示同专业组其他未推荐专业 ──
+  if (state.assistantAdjust) {
+    const nonMatched = allMajors.filter(function (m) { return m.g !== entry.g })
+    if (nonMatched.length > 0) {
+      const adjustSection = document.createElement('div')
+      adjustSection.className = 'as-wide-adjust-section'
+      const adjustHeader = document.createElement('div')
+      adjustHeader.className = 'as-wide-adjust-header'
+      adjustHeader.textContent = '⊙ 同专业组其他专业（' + nonMatched.length + '个）'
+      adjustSection.appendChild(adjustHeader)
+      const adjustList = document.createElement('div')
+      adjustList.className = 'as-wide-adjust-list'
+      for (let ai = 0; ai < nonMatched.length; ai++) {
+        const m = nonMatched[ai]
+        const item = document.createElement('span')
+        item.className = 'adjust-major-item'
+        var tierHtml = ''
+        if ((userScore || userRank) && algoVal && (m.a || m.b || m.d)) {
+          var majorTier = calculateMajorTier(userScore, userRank, m, algoVal)
+          if (majorTier) {
+            tierHtml = ' <span class="adjust-major-tier as-major-tier-' + majorTier + '">' + majorTier + '</span>'
+          }
+        }
+        item.innerHTML = '· ' + tierHtml + '<span class="major-name">' + escHtml(m.g) + '</span>' +
+          (m.code ? ' <span class="major-detail">(代号' + escHtml(m.code) + ')</span>' : '') +
+          (m.planCount ? ' <span class="major-detail">计划' + m.planCount + '人</span>' : '')
+        adjustList.appendChild(item)
+      }
+      adjustSection.appendChild(adjustList)
+      card.appendChild(adjustSection)
+    }
+  }
+
   // ── 底部信息行 ──
   const footer = document.createElement('div')
   footer.className = 'as-wide-footer'
@@ -2600,14 +2633,6 @@ function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
     fb.className = 'as-wide-fitem'
     fb.textContent = '批次: ' + entry.batch
     footer.appendChild(fb)
-  }
-
-  // 服从调剂
-  if (state.assistantAdjust) {
-    const fa = document.createElement('span')
-    fa.className = 'as-wide-fitem as-wide-fitem-adjust'
-    fa.textContent = '⊙ 已勾选服从调剂'
-    footer.appendChild(fa)
   }
 
   // 备注
