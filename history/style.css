@@ -2176,9 +2176,9 @@ input[type="number"] {
   display: none;
 }
 .as-wide-table {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
-  min-width: 100%;
+  width: 100%;
   padding: 10px 16px 12px;
   font-size: 13px;
 }
@@ -2226,9 +2226,8 @@ input[type="number"] {
 }
 
 .as-wide-td-name {
-  width: 110px;
+  flex: 1;
   min-width: 0;
-  flex-shrink: 0;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -2339,7 +2338,7 @@ input[type="number"] {
 
 /* 窄屏下列宽微调 */
 @media (max-width: 860px) {
-  .as-wide-td-name { width: 80px; }
+  .as-wide-td-name { width: 120px; flex: none; }
   .as-wide-td-fee { width: 52px; }
   .as-wide-td-plan { width: 38px; }
   .as-wide-td-remark-btn-col { width: 20px; }
