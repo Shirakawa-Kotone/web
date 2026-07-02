@@ -2621,7 +2621,8 @@ function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
     '<span class="as-wide-td as-wide-td-fee">学费</span>' +
     '<span class="as-wide-td as-wide-td-2024">2024分/名</span>' +
     '<span class="as-wide-td as-wide-td-2025">2025分/名</span>' +
-    '<span class="as-wide-td as-wide-td-plan">计划</span>'
+    '<span class="as-wide-td as-wide-td-plan">计划</span>' +
+    '<span class="as-wide-td as-wide-td-remark-btn-col">注</span>'
   table.appendChild(theader)
 
   // 若无专业数据，显示提示
@@ -2672,9 +2673,9 @@ function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
     }
     // 新增专业标记（无历史数据）
     var newTagHtml = (m.d && !m.a && !m.b) ? '<span class="as-wide-tag-new">新</span>' : ''
-    var remarkBtnHtml = (m.remark && m.remark !== '—')
-      ? '<span class="as-wide-remark-btn">注▸</span>'
-      : ''
+    var remarkCellHtml = (m.remark && m.remark !== '—')
+      ? '<span class="as-wide-td as-wide-td-remark-btn-col"><span class="as-wide-remark-btn">注▸</span></span>'
+      : '<span class="as-wide-td as-wide-td-remark-btn-col"></span>'
     row.innerHTML =
       '<span class="as-wide-td as-wide-td-num">' + (mi + 1) + '</span>' +
       '<span class="as-wide-td as-wide-td-name">' + majorTierHtml + newTagHtml + escHtml(m.g) + '</span>' +
@@ -2682,7 +2683,8 @@ function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
       '<span class="as-wide-td as-wide-td-fee">' + feeStr + '</span>' +
       '<span class="as-wide-td as-wide-td-2024">' + y2024 + '</span>' +
       '<span class="as-wide-td as-wide-td-2025">' + y2025 + '</span>' +
-      '<span class="as-wide-td as-wide-td-plan">' + planStr + remarkBtnHtml + '</span>'
+      '<span class="as-wide-td as-wide-td-plan">' + planStr + '</span>' +
+      remarkCellHtml
     table.appendChild(row)
 
     // 备注展开行
