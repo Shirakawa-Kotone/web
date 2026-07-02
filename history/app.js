@@ -2533,6 +2533,9 @@ function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
     }
     // 新增专业标记（无历史数据）
     var newTagHtml = (m.d && !m.a && !m.b) ? '<span class="as-wide-tag-new">新</span>' : ''
+    var remarkBtnHtml = (m.remark && m.remark !== '—')
+      ? '<span class="as-wide-remark-btn">注▸</span>'
+      : ''
     row.innerHTML =
       '<span class="as-wide-td as-wide-td-num">' + (mi + 1) + '</span>' +
       '<span class="as-wide-td as-wide-td-name">' + majorTierHtml + newTagHtml + escHtml(m.g) + '</span>' +
@@ -2540,8 +2543,31 @@ function renderCardWide(entry, userScore, userRank, gmi, algoVal) {
       '<span class="as-wide-td as-wide-td-fee">' + feeStr + '</span>' +
       '<span class="as-wide-td as-wide-td-2024">' + y2024 + '</span>' +
       '<span class="as-wide-td as-wide-td-2025">' + y2025 + '</span>' +
-      '<span class="as-wide-td as-wide-td-plan">' + planStr + '</span>'
+      '<span class="as-wide-td as-wide-td-plan">' + planStr + remarkBtnHtml + '</span>'
     table.appendChild(row)
+
+    // 备注展开行
+    if (m.remark && m.remark !== '—') {
+      var remarkRow = document.createElement('div')
+      remarkRow.className = 'as-wide-tr as-wide-tr-remark'
+      remarkRow.style.display = 'none'
+      remarkRow.innerHTML = '<span class="as-wide-td as-wide-td-remark">' + escHtml(m.remark) + '</span>'
+      table.appendChild(remarkRow)
+      // 绑定展开事件（通过 DOM 遍历找相邻备注行，避免闭包变量共享问题）
+      var _btn = row.querySelector('.as-wide-remark-btn')
+      if (_btn) {
+        _btn.addEventListener('click', function (e) {
+          e.stopPropagation()
+          var tr = this.parentElement.parentElement
+          var nr = tr.nextElementSibling
+          if (nr && nr.classList.contains('as-wide-tr-remark')) {
+            var hidden = nr.style.display === 'none'
+            nr.style.display = hidden ? '' : 'none'
+            this.innerHTML = hidden ? '注▾' : '注▸'
+          }
+        })
+      }
+    }
   }
 
   // 包裹表格以便水平滚动（行背景随内容扩展）

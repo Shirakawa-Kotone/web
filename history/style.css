@@ -2287,7 +2287,36 @@ input[type="number"] {
   width: 44px;
   text-align: right;
   color: var(--text-secondary);
+  white-space: nowrap;
 }
+
+/* 备注展开按钮 */
+.as-wide-remark-btn {
+  display: inline-block;
+  margin-left: 3px;
+  font-size: 10px;
+  color: var(--link-color, #1a73e8);
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+}
+.as-wide-remark-btn:hover {
+  opacity: 0.7;
+}
+
+/* 备注展开行 */
+.as-wide-tr-remark {
+  background: var(--bg-hover, #f5f5f5);
+}
+.as-wide-td-remark {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 4px 12px 6px;
+  text-align: left;
+  min-width: 200px;
+}
+.dark-mode .as-wide-tr-remark { background: #252525; }
 
 /* 窄屏下保持列对齐，专业名通过表格扩展完整显示 */
 @media (max-width: 860px) {
@@ -2295,6 +2324,7 @@ input[type="number"] {
   .as-wide-td-plan { width: 38px; }
   .as-wide-td-2024,
   .as-wide-td-2025 { width: 78px; }
+  .as-wide-td-remark { min-width: 140px; }
 }
 
 .as-wide-footer {
